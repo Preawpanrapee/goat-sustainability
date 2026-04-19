@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>GOAT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root {
+  --beige:#E8E4D9;--beige2:#F0EDE5;--beige3:#D9D4C7;
+  --lime:#C8F135;--lime-d:#8FB800;
+  --black:#0A0A0A;--offblack:#1A1A1A;
+  --white:#FFFFFF;--off-white:#FAFAF8;
+  --gray:#F2F2F0;--gray2:#E8E8E4;--gray3:#9B9B94;
+  --kpi1:#7A6E5F;--kpi2:#4A5568;--kpi3:#E8E0CC;--kpi4:#C05A2C;
+  --text:#0A0A0A;--muted:#6B6B62;--hint:#ABABAA;
+  --r:20px;--rs:14px;--rb:40px;
+  --font-display:'Instrument Serif',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font-body);background:var(--beige);color:var(--text);font-size:14px;min-height:100vh;overflow-x:hidden}
+.hidden{display:none!important}
+input,select,textarea,button{font-family:var(--font-body)}
+
+/* ── LOGIN ── */
+#ls{min-height:100vh;background:var(--beige);display:flex;flex-direction:column;padding:32px 24px 40px}
+.ls-logo{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:48px}
+.ls-logo span{font-weight:300}
+.ls-heading{font-family:var(--font-display);font-size:38px;line-height:1.1;margin-bottom:6px;color:var(--offblack)}
+.ls-sub{font-size:15px;color:var(--muted);margin-bottom:36px;font-weight:400}
+.role-section{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.rg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.rg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.rb{background:var(--white);border-radius:var(--r);border:1.5px solid transparent;padding:16px 12px 14px;cursor:pointer;text-align:left;transition:all .18s;position:relative;overflow:hidden}
+.rb:hover{border-color:var(--lime-d);background:var(--off-white)}
+.rb.sel{border-color:var(--black);background:var(--white)}
+.rb.sel::after{content:'';position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--black)}
+.rb .ri{font-size:36px;margin-bottom:10px;display:block;line-height:1}
+.rb .rn{font-size:13px;font-weight:600;color:var(--offblack);display:block}
+.rb .rt{font-size:11px;color:var(--muted);margin-top:1px;display:block}
+.rb-owner{background:var(--white);border-radius:var(--r);border:1.5px solid transparent;padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all .18s;margin-bottom:10px;width:100%;text-align:left}
+.rb-owner:hover{border-color:var(--lime-d)}
+.rb-owner.sel{border-color:var(--black)}
+.rb-owner .ri{font-size:40px;flex-shrink:0}
+.rb-owner .rn{font-size:14px;font-weight:600;color:var(--offblack)}
+.rb-owner .rt{font-size:12px;color:var(--muted);margin-top:2px}
+.ls-spacer{flex:1}
+.lbtn{width:100%;padding:18px;background:var(--black);color:var(--white);border:none;border-radius:var(--rb);font-size:16px;font-weight:500;cursor:pointer;letter-spacing:-.2px;transition:opacity .15s;font-family:var(--font-body)}
+.lbtn:disabled{opacity:.3;cursor:not-allowed}
+.lbtn:not(:disabled):hover{opacity:.85}
+
+/* ── APP ── */
+#app{display:none;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;background:var(--white);position:relative}
+
+/* TOPBAR */
+.tb{background:var(--white);padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.tb-ham{width:36px;height:36px;display:flex;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:4px}
+.tb-ham span{display:block;height:2px;background:var(--black);border-radius:2px;transition:all .2s}
+.tb-ham span:first-child{width:24px}
+.tb-ham span:last-child{width:16px}
+.lo-btn{background:var(--white);border:1.5px solid var(--offblack);border-radius:var(--rb);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--offblack);flex-shrink:0;display:block!important;opacity:1!important;visibility:visible!important}
+.lo-btn:hover{background:var(--gray)}
+
+/* SIDEBAR */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
+.sidebar-overlay.open{opacity:1;pointer-events:all}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:72%;max-width:280px;background:var(--gray);z-index:400;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);padding:60px 28px 40px;display:flex;flex-direction:column}
+.sidebar.open{transform:translateX(0)}
+.sb-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.sb-item{padding:14px 16px;border-radius:var(--rs);font-size:16px;font-weight:500;color:var(--offblack);cursor:pointer;transition:background .15s;border:none;background:transparent;text-align:left;font-family:var(--font-body);width:100%}
+.sb-item:hover{background:var(--gray2)}
+.sb-item.active{background:var(--black);color:var(--white)}
+.sb-role{margin-top:auto;padding-top:24px;border-top:1px solid var(--gray2)}
+.sb-role-name{font-size:13px;font-weight:600;color:var(--offblack)}
+.sb-role-title{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* MAIN CONTENT */
+.mc{flex:1;padding:0 20px 100px;overflow-y:auto}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--white);border-top:1px solid var(--gray2);padding:12px 0 20px;z-index:100}
+.ntabs{display:flex;justify-content:space-around}
+.ntab{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:2px 16px;border:none;background:transparent;font-family:var(--font-body)}
+.ntab .ni{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;transition:background .15s}
+.ntab.active .ni{background:var(--black)}
+.ntab .nl{font-size:10px;color:var(--hint);font-weight:500}
+.ntab.active .nl{color:var(--offblack);font-weight:600}
+
+/* HOME */
+.home-greeting{padding:20px 0 24px;display:flex;align-items:flex-start;justify-content:space-between}
+.greeting-text .hi{font-size:13px;color:var(--muted);margin-bottom:4px}
+.greeting-text h1{font-family:var(--font-display);font-size:32px;line-height:1.1;color:var(--offblack)}
+.role-badge{display:inline-block;background:var(--lime);color:var(--offblack);border-radius:var(--rb);padding:6px 14px;font-size:12px;font-weight:600;margin-top:10px}
+.avatar{width:60px;height:60px;border-radius:50%;background:var(--gray2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid var(--gray2)}
+
+/* KPI FILTER TABS */
+.filter-tabs{display:flex;gap:8px;margin:4px 0 16px}
+.ftab{padding:8px 16px;border-radius:var(--rb);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font-body);transition:all .15s}
+.ftab.active{background:var(--lime);color:var(--offblack)}
+.ftab:not(.active){background:var(--gray);color:var(--muted)}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.kpi-card{border-radius:var(--r);padding:18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform .15s;overflow:hidden;position:relative}
+.kpi-card:active{transform:scale(.98)}
+.kpi-card .kl{font-size:12px;font-weight:500;color:rgba(255,255,255,.75);line-height:1.3}
+.kpi-card .kl.dark{color:rgba(0,0,0,.55)}
+.kpi-card .kv{font-family:var(--font-display);font-size:42px;line-height:1;font-weight:400}
+.kpi-card .ku{font-size:12px;opacity:.7;font-weight:400}
+.kpi1{background:var(--kpi1)}.kpi1 .kv{color:var(--white)}
+.kpi2{background:var(--kpi2)}.kpi2 .kv{color:var(--white)}
+.kpi3{background:var(--kpi3)}.kpi3 .kv{color:var(--offblack)}.kpi3 .kl{color:rgba(0,0,0,.55)!important}
+.kpi4{background:var(--kpi4)}.kpi4 .kv{color:var(--white)}
+
+/* SECTION TITLE */
+.stl{font-size:16px;font-weight:600;margin:0 0 14px;color:var(--offblack);display:flex;align-items:center;justify-content:space-between}
+.stl a{font-size:12px;color:var(--muted);font-weight:400}
+
+/* QUICK ACCESS */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:28px}
+.qa-btn{background:var(--gray);border-radius:var(--r);padding:16px 8px 14px;cursor:pointer;text-align:center;border:none;font-family:var(--font-body);transition:all .15s}
+.qa-btn:hover{background:var(--gray2)}
+.qa-btn:active{transform:scale(.96)}
+.qa-btn .qi{font-size:24px;margin-bottom:8px;display:block}
+.qa-btn .ql{font-size:10px;font-weight:500;color:var(--offblack)}
+
+/* MENU LIST */
+.mcard{background:var(--white);border-radius:var(--r);border:1px solid var(--gray2);overflow:hidden;margin-bottom:10px}
+.mi{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;border-bottom:1px solid var(--gray2);transition:background .1s;border:none;background:var(--white);width:100%;text-align:left;font-family:var(--font-body)}
+.mi:last-child{border-bottom:none}
+.mi:active{background:var(--gray)}
+.mi .iw{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.mi .inf{flex:1;min-width:0}
+.mi .inf .mn{font-size:14px;font-weight:500;color:var(--offblack)}
+.mi .inf .md{font-size:11px;color:var(--muted);margin-top:2px}
+.mi .mbg{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;flex-shrink:0;background:var(--gray);color:var(--muted)}
+.chv{color:var(--hint);font-size:18px;margin-left:4px}
+
+/* FORMS */
+.page-header{padding:20px 0 16px}
+.page-header h2{font-family:var(--font-display);font-size:28px;color:var(--offblack)}
+.page-header p{font-size:13px;color:var(--muted);margin-top:4px}
+.fs{background:var(--white);border-radius:var(--r);border:1px solid var(--gray2);overflow:hidden;margin-bottom:14px}
+.fst{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--gray2);background:var(--gray)}
+.fi{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--gray2);gap:10px}
+.fi:last-child{border-bottom:none}
+.fi label{font-size:12px;color:var(--muted);flex-shrink:0;width:100px}
+.fi input,.fi select,.fi textarea{flex:1;border:none;background:transparent;font-size:14px;color:var(--offblack);font-family:var(--font-body);outline:none;min-width:0}
+.fi textarea{resize:none;height:72px;padding-top:2px}
+.fi select{-webkit-appearance:none;cursor:pointer}
+.av{flex:1;font-size:14px;font-weight:600}
+.av.gn{color:#2D6A2D}.av.bl{color:#1E3A8A}.av.or{color:#92400E}.av.rd{color:#991B1B}
+.pf{padding:13px 16px;border-bottom:1px solid var(--gray2)}
+.pf:last-child{border-bottom:none}
+.pbtn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--gray);border:1.5px dashed var(--gray3);border-radius:var(--rs);cursor:pointer}
+.pbtn span{font-size:12px;color:var(--muted);font-weight:500}
+.sbtn{width:100%;padding:16px;border:none;border-radius:var(--rb);font-size:15px;font-weight:500;cursor:pointer;margin-top:6px;font-family:var(--font-body);transition:opacity .15s;letter-spacing:-.2px}
+.sbtn:active{opacity:.8}
+.sbtn.black{background:var(--black);color:var(--white)}
+.sbtn.lime{background:var(--lime);color:var(--offblack)}
+.sbtn.gray{background:var(--gray2);color:var(--offblack)}
+.sbtn.danger{background:#991B1B;color:var(--white)}
+
+/* TAG PICKER */
+.tpick{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.tag{font-size:12px;padding:5px 12px;border-radius:var(--rb);cursor:pointer;font-weight:500;border:1.5px solid var(--gray2);background:var(--white);color:var(--muted);transition:all .1s}
+.tag.act{border-color:var(--black);background:var(--black);color:var(--white)}
+
+/* STARS */
+.star{font-size:22px;cursor:pointer;opacity:.2;transition:opacity .1s;line-height:1}
+.star.act{opacity:1}
+.spick{display:flex;gap:3px;flex:1}
+
+/* INFO BOX */
+.ibox{border-radius:var(--rs);padding:11px 14px;margin-bottom:14px;font-size:12px;line-height:1.6;font-weight:500}
+.ibox.gn{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.ibox.or{background:#FFF7ED;border:1px solid #FED7AA;color:#92400E}
+.ibox.bl{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.ibox.pu{background:#F5F3FF;border:1px solid #DDD6FE;color:#5B21B6}
+.ibox.pk{background:#FDF2F8;border:1px solid #FBCFE8;color:#9D174D}
+
+/* INGREDIENT PICKER */
+.is{width:100%;padding:11px 14px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);background:var(--white);color:var(--offblack);outline:none;margin-bottom:8px}
+.is:focus{border-color:var(--black)}
+.il{max-height:190px;overflow-y:auto;border:1.5px solid var(--gray2);border-radius:var(--rs)}
+.io{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--gray2);font-size:13px;display:flex;justify-content:space-between;align-items:center;transition:background .1s}
+.io:last-child{border-bottom:none}
+.io:hover{background:var(--gray)}
+.io.sel{background:var(--lime);color:var(--offblack)}
+.io .in{font-weight:500}
+.io .im{font-size:10px;color:var(--muted)}
+.io.sel .im{color:var(--offblack)}
+.ichips{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px}
+.ich{display:flex;align-items:center;gap:4px;background:var(--black);color:var(--white);border-radius:var(--rb);padding:4px 10px;font-size:11px;font-weight:500}
+.ich .xr{cursor:pointer;font-size:13px;opacity:.7}
+
+/* RECIPE STEPS */
+.stlist{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.stitem{display:flex;gap:8px;align-items:flex-start}
+.stnum{width:26px;height:26px;border-radius:50%;background:var(--black);color:var(--white);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px}
+.stin{flex:1;padding:10px 13px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);color:var(--offblack);outline:none;background:var(--white)}
+.stin:focus{border-color:var(--black)}
+.stdel{width:26px;height:26px;border:none;background:var(--gray2);color:var(--muted);border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;font-family:var(--font-body)}
+.add-step{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--gray);border:1.5px dashed var(--gray3);border-radius:var(--rs);cursor:pointer;font-size:12px;color:var(--muted);font-family:var(--font-body);width:100%;font-weight:500}
+
+/* ENTRY CARDS */
+.ec{background:var(--white);border-radius:var(--rs);border:1px solid var(--gray2);padding:14px 15px;margin-bottom:8px;position:relative}
+.et{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.etitle{font-size:14px;font-weight:500;flex:1;margin-right:8px;color:var(--offblack)}
+.edate{font-size:11px;color:var(--hint)}
+.esub{font-size:12px;color:var(--muted);margin-top:2px}
+.edel{position:absolute;bottom:12px;right:12px;background:var(--gray);color:var(--muted);border:none;border-radius:var(--rb);padding:5px 10px;cursor:pointer;font-size:11px;font-weight:500;font-family:var(--font-body)}
+.pill{display:inline-block;font-size:10px;padding:3px 9px;border-radius:var(--rb);font-weight:600}
+.pill.gn{background:#DCFCE7;color:#166534}
+.pill.or{background:#FFEDD5;color:#9A3412}
+.pill.pu{background:#EDE9FE;color:#5B21B6}
+.pill.rd{background:#FEE2E2;color:#991B1B}
+.pill.pk{background:#FCE7F3;color:#9D174D}
+.pill.bl{background:#DBEAFE;color:#1E40AF}
+.pill.am{background:#FEF3C7;color:#92400E}
+.pill.te{background:#CCFBF1;color:#134E4A}
+.pill.cy{background:#CFFAFE;color:#164E63}
+
+/* RECIPE VIEW */
+.recipe-view{background:var(--white);border-radius:var(--r);border:1px solid var(--gray2);padding:18px;margin-bottom:12px}
+.rv-dish{font-family:var(--font-display);font-size:22px;color:var(--offblack);margin-bottom:4px}
+.rv-sec{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
+.rv-ing-chip{display:inline-block;background:var(--gray);color:var(--offblack);border-radius:var(--rb);padding:4px 10px;font-size:11px;font-weight:500;margin:2px 3px 2px 0}
+.rv-step{display:flex;gap:10px;margin-bottom:8px;font-size:13px;color:var(--offblack);line-height:1.5}
+.rv-snum{width:22px;height:22px;border-radius:50%;background:var(--offblack);color:var(--white);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+
+/* CARBON */
+.scope-card{border-radius:var(--r);padding:16px;margin-bottom:10px;border:none}
+.prog{height:4px;background:var(--gray2);border-radius:2px;overflow:hidden;margin:8px 0}
+.progf{height:100%;border-radius:2px}
+.ef-box{background:var(--gray);border-radius:var(--rs);padding:14px 16px;margin-top:8px}
+.ef-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:3px 0}
+
+/* PHASE TABS */
+.ptabs{display:flex;gap:8px;margin-bottom:14px}
+.ptab{flex:1;padding:10px 6px;border-radius:var(--rs);border:1.5px solid var(--gray2);background:var(--white);cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--muted);font-family:var(--font-body);transition:all .15s}
+.ptab.act{border-color:var(--black);background:var(--black);color:var(--white)}
+
+/* DB */
+.db-cat{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:10px 16px 6px;border-bottom:1px solid var(--gray2);background:var(--gray)}
+.db-ing{padding:12px 16px;border-bottom:1px solid var(--gray2);display:flex;justify-content:space-between;align-items:center;background:var(--white)}
+.db-ing:last-child{border-bottom:none}
+.db-ing .din{font-size:13px;font-weight:500;color:var(--offblack)}
+.db-ing .dsp{font-size:11px;color:var(--muted);margin-top:1px}
+.db-new{font-size:10px;background:var(--lime);color:var(--offblack);padding:2px 7px;border-radius:var(--rb);font-weight:600;margin-left:6px}
+
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-end;justify-content:center}
+.modal-box{background:var(--white);border-radius:var(--r) var(--r) 0 0;padding:32px 24px 44px;width:100%;max-width:430px;text-align:center;position:relative;z-index:10000}
+.modal-box .mico{font-size:36px;margin-bottom:12px}
+.modal-box h3{font-family:var(--font-display);font-size:22px;margin-bottom:6px;color:var(--offblack)}
+.modal-box p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.modal-btns{display:flex;flex-direction:column-reverse;gap:10px}
+.mbtn-cancel{padding:14px;border-radius:var(--rb);border:1.5px solid var(--gray2);background:var(--white);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);color:var(--offblack);width:100%}
+.mbtn-ok{padding:14px;border-radius:var(--rb);border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);color:#FFFFFF;background:#0A0A0A;width:100%}
+
+/* TOAST */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--offblack);color:var(--white);padding:11px 20px;border-radius:var(--rb);font-size:13px;font-weight:500;z-index:9998;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* OVERVIEW TITLE */
+.ov-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ov-title{font-size:16px;font-weight:600;color:var(--offblack)}
+.ov-grid-btn{width:32px;height:32px;background:var(--black);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+.photo-zone{width:100%}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.photo-thumb{position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:1.5px solid var(--gray2);flex-shrink:0}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-del{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);color:white;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1}
+.photo-add-btn{width:80px;height:80px;border-radius:10px;border:1.5px dashed var(--gray3);background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;flex-shrink:0}
+.photo-add-btn span:last-child{font-size:10px;color:var(--muted);font-weight:500}
+
+.ing-table{width:100%;border-collapse:collapse;margin-top:8px}
+.ing-table th{font-size:11px;font-weight:600;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--gray2);text-transform:uppercase;letter-spacing:.05em}
+.ing-table td{font-size:13px;padding:9px 8px;border-bottom:1px solid var(--gray2);color:var(--offblack);vertical-align:middle}
+.ing-table tr:last-child td{border-bottom:none}
+.ing-table tr:hover td{background:var(--gray)}
+.ing-table input{border:none;background:transparent;font-size:13px;font-family:var(--font-body);color:var(--offblack);width:100%;outline:none;min-width:0}
+.ing-table select{border:none;background:transparent;font-size:12px;font-family:var(--font-body);color:var(--muted);outline:none;-webkit-appearance:none;cursor:pointer;width:100%}
+.ing-table .del-ing-row{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 4px;font-family:inherit}
+.ing-table .del-ing-row:hover{color:var(--rd-d)}
+.add-ing-row{display:flex;align-items:center;gap:8px;padding:8px 0 2px;cursor:pointer;font-size:12px;color:var(--muted);font-weight:500;border:none;background:none;font-family:var(--font-body);width:100%}
+.add-ing-row:hover{color:var(--offblack)}
+.ing-search-wrap{position:relative;margin-bottom:8px}
+.ing-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid var(--gray2);border-radius:var(--rs);z-index:50;max-height:200px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.ing-dropdown .io{padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--gray2);font-size:13px;display:flex;justify-content:space-between}
+.ing-dropdown .io:last-child{border-bottom:none}
+.ing-dropdown .io:hover{background:var(--gray)}
+
+.scope-card.s1{background:#FEF2F2;border-left:4px solid #EF4444}
+.scope-card.s2{background:#EFF6FF;border-left:4px solid #3B82F6}
+.scope-card.s3{background:#FFF7ED;border-left:4px solid #EA580C}
+.scope-card .scope-val{font-size:22px;font-weight:700;text-align:right}
+.scope-card .scope-lbl{font-size:13px;font-weight:600}
+.scope-card .scope-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.scope-card .scope-ef{font-size:10px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="ls-logo">G<span>OAT</span></div>
+  <div class="ls-heading">Welcome back,<br>GOAT TEAM</div>
+  <div class="ls-sub">What's our mission today?</div>
+
+  <div class="rg2">
+    <button class="rb" onclick="pick('fluke')">
+      <span class="ri">👨‍🍳</span>
+      <span class="rn">Chef Fluke</span><span class="rt">Sous Chef</span>
+    </button>
+    <button class="rb" onclick="pick('yok')">
+      <span class="ri">🧑‍🍳</span>
+      <span class="rn">Chef Yok</span><span class="rt">Kitchen Staff</span>
+    </button>
+  </div>
+  <div class="rg3">
+    <button class="rb" onclick="pick('peter')">
+      <span class="ri">🔬</span>
+      <span class="rn">Chef Peter</span><span class="rt">R&D</span>
+    </button>
+    <button class="rb" onclick="pick('pastry')">
+      <span class="ri">🍰</span>
+      <span class="rn">Chef Fha</span><span class="rt">Pastry</span>
+    </button>
+    <button class="rb" onclick="pick('mixo')">
+      <span class="ri">🍹</span>
+      <span class="rn">Mixologist</span><span class="rt">Gus</span>
+    </button>
+  </div>
+  <div class="rg2" style="margin-bottom:10px">
+    <button class="rb" onclick="pick('joy')">
+      <span class="ri">🔔</span>
+      <span class="rn">Manager</span><span class="rt">Joy</span>
+    </button>
+    <button class="rb" onclick="pick('staff')">
+      <span class="ri">🧑‍🍳</span>
+      <span class="rn">Kitchen Staff</span><span class="rt">Help Yok</span>
+    </button>
+  </div>
+  <button class="rb-owner" onclick="pick('owner')">
+    <span class="ri">🏠</span>
+    <div>
+      <div class="rn">Chef Tan</div>
+      <div class="rt">This is not for you — it's for the owner</div>
+    </div>
+  </button>
+
+  <div class="ls-spacer"></div>
+  <!-- Password field -->
+  <div id="pw-wrap" style="display:none;margin-top:12px">
+    <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px" id="pw-label">Password</div>
+    <div style="position:relative">
+      <input id="pw-input" type="password" placeholder="Enter password..."
+        oninput="checkPassword()"
+        onkeydown="if(event.key==='Enter'&&!document.getElementById('lbtn').disabled)doLogin()"
+        style="width:100%;padding:13px 44px 13px 14px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:14px;font-family:var(--font-body);outline:none;background:var(--white);color:var(--offblack)"/>
+      <button onclick="togglePwVis()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted)" id="pw-eye">👁</button>
+    </div>
+    <div id="pw-error" style="font-size:12px;color:#DC2626;margin-top:6px;min-height:18px"></div>
+  </div>
+  <button class="lbtn" id="lbtn" onclick="doLogin()" disabled>Login</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Sidebar overlay -->
+  <div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-nav" id="sb-nav"></div>
+    <div class="sb-role">
+      <div class="sb-role-name" id="sb-role-name"></div>
+      <div class="sb-role-title" id="sb-role-title"></div>
+    </div>
+  </div>
+
+  <!-- Topbar -->
+  <div class="tb">
+    <div class="tb-ham" onclick="openSidebar()" id="ham-btn">
+      <span></span><span></span>
+    </div>
+    <span id="tbtitle" style="flex:1;font-size:13px;font-weight:500;color:var(--muted);padding-left:10px"></span>
+    <span class="tb-badge hidden" id="rdbadge" style="font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;margin-right:8px"></span>
+    <span class="hidden" id="back-btn" onclick="goBack()" style="font-size:22px;cursor:pointer;color:var(--muted);margin-right:8px">‹</span>
+    <button class="lo-btn" onclick="openLogout()">Log out</button>
+  </div>
+
+  <!-- Main -->
+  <div class="mc" id="mc"></div>
+
+  <!-- Bottom nav -->
+  <div class="bnav" id="bnav"><div class="ntabs" id="ntabs"></div></div>
+</div>
+
+<!-- MODAL (bottom sheet) -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-end;justify-content:center">
+  <div class="modal-box">
+    <div class="mico" id="m-ico">👋</div>
+    <h3 id="m-title">Log out?</h3>
+    <p id="m-msg">Unsaved data will be lost.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" id="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="mbtn-ok" id="m-ok">Log out</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+
+const INGREDIENT_DB=[
+{n:'Black tea',c:'Beverage Base',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Matcha',c:'Beverage Base',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Thai tea',c:'Beverage Base',s:'Chiang Rai',sp:'Go Organic'},
+{n:'Egg',c:'Dairy Product',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:"Cow's milk",c:'Dairy Product',s:'Nakhon Pathom',sp:'Little goat farm'},
+{n:'Buffalo milk',c:'Dairy Product',s:'Chachoengsao',sp:'Marrah Milk'},
+{n:'Buffalo Butter',c:'Dairy Product',s:'Chachoengsao',sp:'Murrah Milk'},
+{n:'Semi hard Goat cheese',c:'Dairy Product',s:'Nakhon Pathom',sp:'Little goat farm'},
+{n:'Local Goat Cheese',c:'Dairy Product',s:'Nakhon Pathom',sp:'Little goat farm'},
+{n:'Local Cow Cheese',c:'Dairy Product',s:'Nakhon Pathom',sp:'Little goat farm'},
+{n:'Thai Marigolds',c:'Flower/Edible Flower',s:'Our Garden Goat BKK',sp:'I dad natural farm'},
+{n:'Cosmos',c:'Flower/Edible Flower',s:'Chonburi',sp:'I dad natural farm'},
+{n:'Dill flower/leaves',c:'Flower/Edible Flower',s:'Our Garden Goat BKK',sp:'Go Organic'},
+{n:'Butterfly carnation',c:'Flower/Edible Flower',s:'Chonburi',sp:'I dad natural farm'},
+{n:'Oxalis triangularis',c:'Flower/Edible Flower',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Star flower',c:'Flower/Edible Flower',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Jasmine rice',c:'Flower/Edible Flower',s:'Surin',sp:'Hatch goodies'},
+{n:'Rose Apple',c:'Flower/Edible Flower',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Roses',c:'Flower/Edible Flower',s:'Chanthaburi',sp:'Go Organic'},
+{n:'Sweet Orange blossom',c:'Flower/Edible Flower',s:'Lampang',sp:'Go Organic'},
+{n:'Chinese Date',c:'Flower/Edible Flower',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Beetroot',c:'Flower/Edible Flower',s:'Chiang Mai',sp:'Go Organic'},
+{n:'White Tea flower',c:'Flower/Edible Flower',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Longan',c:'Fruit',s:'Yala',sp:'พี่แดง'},
+{n:'Kaffir Lime',c:'Fruit',s:'Lampang',sp:'Go Organic'},
+{n:'Strawberry',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Santol',c:'Fruit',s:'Chanthaburi',sp:'พี่แดง'},
+{n:'Bitter Melon',c:'Fruit',s:'Pathum Thani',sp:'Go Organic'},
+{n:'Cranberry hibiscus',c:'Fruit',s:'Our Garden Goat BKK',sp:'I dad natural farm'},
+{n:'Garcinia cowa',c:'Fruit',s:'Phang Nga',sp:'Go Organic'},
+{n:'Calamansi',c:'Fruit',s:'Chumphon',sp:'Go Organic'},
+{n:'Jackfruit',c:'Fruit',s:'Chumphon',sp:'Go Organic'},
+{n:'Tomato',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Coconut',c:'Fruit',s:'Prachin Buri',sp:'ลุงสุวัฒน์'},
+{n:'Coconut water',c:'Fruit',s:'Prachin Buri',sp:'ลุงสุวัฒน์'},
+{n:'Lychee',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Suanpueng pineapple',c:'Fruit',s:'Lampang',sp:'Go Organic'},
+{n:'Phuket pineapple',c:'Fruit',s:'Phuket',sp:'Go Organic'},
+{n:'Pulae pineapple',c:'Fruit',s:'Chiang Rai',sp:'Go Organic'},
+{n:'Guava',c:'Fruit',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Mulberry',c:'Fruit',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Sour orange',c:'Fruit',s:'Ratchaburi',sp:'Go Organic'},
+{n:'Lime',c:'Fruit',s:'Ratchaburi',sp:'Go Organic'},
+{n:'Durian',c:'Fruit',s:'Chanthaburi',sp:'พี่แดง'},
+{n:'Plum',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Mango',c:'Fruit',s:'Pathum Thani',sp:'วราภร์ฟาร์ม'},
+{n:'Papaya',c:'Fruit',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Banana',c:'Fruit',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Wild Honey',c:'Fruit',s:'Throughout Thailand',sp:'พี่เบ้น บำรุงสุขฟาร์ม'},
+{n:'Watermelon',c:'Fruit',s:'Suphan Buri',sp:'Go Organic'},
+{n:'Purple Potato',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Dry Fig',c:'Fruit',s:'Nakhon Si Thammarat',sp:'Go Organic'},
+{n:'Salted Plum',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Vanilla',c:'Fruit',s:'Nakhon Ratchasima',sp:'Go Organic'},
+{n:'Pineapple',c:'Fruit',s:'Lampang',sp:'Go Organic'},
+{n:'Chrysanthemum Flower',c:'Fruit',s:'Khon Kaen',sp:'Go Organic'},
+{n:'Cherry',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Pumpkin',c:'Fruit',s:'Nong Bua Lamphu',sp:'Go Organic'},
+{n:'Orange',c:'Fruit',s:'Lampang',sp:'Go Organic'},
+{n:'Shiso leaf',c:'Fruit',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Carrot',c:'Fruit',s:'Pathum Thani',sp:'Go Organic'},
+{n:'Ginger',c:'Herb/Spice',s:'Phayao',sp:'Go Organic'},
+{n:'Galangal',c:'Herb/Spice',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Betel Leaves',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Torch ginger',c:'Herb/Spice',s:'Nakhon Si Thammarat',sp:'พี่กนกอร ทองปาน'},
+{n:'Curry leaves',c:'Herb/Spice',s:'Buri Ram',sp:'Go Organic'},
+{n:'Melinjo leaves',c:'Herb/Spice',s:'Phang Nga',sp:'Go Organic'},
+{n:'Cinnamon',c:'Herb/Spice',s:'Kanchanaburi',sp:'Go Organic'},
+{n:'Garcinia leaves',c:'Herb/Spice',s:'Trang',sp:'Go Organic'},
+{n:'Vietnamese coriander',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Ma-Kwaen',c:'Herb/Spice',s:'Nan',sp:'Go Organic'},
+{n:'Coriander seed',c:'Herb/Spice',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Siam Cardamom',c:'Herb/Spice',s:'Nakhon Si Thammarat',sp:'Go Organic'},
+{n:'Nutmeg',c:'Herb/Spice',s:'Chumphon',sp:'Go Organic'},
+{n:'Chaya leaf',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Cardamom',c:'Herb/Spice',s:'Chumphon',sp:'Go Organic'},
+{n:'Turmeric',c:'Herb/Spice',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Shrimp paste',c:'Herb/Spice',s:'Phuket',sp:'จี้ปาน ของแห้ง'},
+{n:'Basil flower',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Palm sugar',c:'Herb/Spice',s:'Chachoengsao',sp:'ทวี ฉิมไทย'},
+{n:'Black Sesame',c:'Herb/Spice',s:'Suphan Buri',sp:'Go Organic'},
+{n:'Stevia',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Apple Mint',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'I Dad natural farm'},
+{n:'Black Mint',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'I Dad natural farm'},
+{n:'White Mint',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'I Dad natural farm'},
+{n:'Lemongrass',c:'Herb/Spice',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Cherry Tomato',c:'Herb/Spice',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Jasmine',c:'Herb/Spice',s:'Saraburi',sp:'Go Organic'},
+{n:'Thai Basil',c:'Herb/Spice',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'White Pepper',c:'Herb/Spice',s:'Chanthaburi',sp:'Go Organic'},
+{n:'Citrus peel',c:'Herb/Spice',s:'Lampang',sp:'Go Organic'},
+{n:'Duck liver',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:'Chicken liver',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:'Chicken',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:'Chicken skin',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:'Pork Jowl',c:'Meat',s:'Phang Nga',sp:'พรอสเพอร์ เซล แอนด์ ซัพพลาย'},
+{n:'Duck eggs',c:'Meat',s:'Samut Prakan',sp:'Bang Krachao Farm'},
+{n:'Duck breast',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:"Pig's Blood",c:'Meat',s:'Saraburi',sp:'Betagro'},
+{n:'Thai Wagyu',c:'Meat',s:'Khon Kaen',sp:'ฟาร์มไทยรัญจวน'},
+{n:'Oxtail',c:'Meat',s:'Surin',sp:'ไทยรัญจวน'},
+{n:'Ducks',c:'Meat',s:'Nakhon Ratchasima',sp:'Klong Phai Farm'},
+{n:'Cashew Nut',c:'Nuts/Seeds',s:'Krabi',sp:'Go Organic'},
+{n:'Wild Peppercorn',c:'Nuts/Seeds',s:'Nan',sp:'Go Organic'},
+{n:"Lion's Mane Mushroom",c:'Seafood',s:'Bangkok (Onnut 17)',sp:'Earthling'},
+{n:'Pink Oyster Mushroom',c:'Seafood',s:'Bangkok (Onnut 17)',sp:'Earthling'},
+{n:'Baby squid',c:'Seafood',s:'Koh Sichang',sp:'คุณปิ๊ง'},
+{n:'Blue Crab',c:'Seafood',s:'Surat Thani',sp:'ป้ามาลี'},
+{n:'Black Kingfish',c:'Seafood',s:'Surat Thani',sp:'Tapi seafood'},
+{n:'Giant Trevally',c:'Seafood',s:'Surat Thani',sp:'Tapi seafood'},
+{n:'Snapper',c:'Seafood',s:'Surat Thani',sp:'Tapi seafood'},
+{n:'Grouper',c:'Seafood',s:'Phang Nga',sp:'Tapi seafood'},
+{n:'Caviar',c:'Seafood',s:'Hua Hin',sp:'House of Caviar'},
+{n:'River Prawn',c:'Seafood',s:'Surat Thani',sp:'ป้ามาลี'},
+{n:'Krill',c:'Seafood',s:'Phuket',sp:'จี้ปาน ของแห้ง'},
+{n:'Fresh Goat Cheese',c:'Seasoning',s:'Nakhon Pathom',sp:'Little goat farm'},
+{n:'Sweet Salt',c:'Seasoning',s:'Pattani',sp:'Prungross Sea Salt'},
+{n:'Red Curry Paste',c:'Seasoning',s:'Phuket',sp:'จี้ปาน ของแห้ง'},
+{n:'Massaman Curry Paste',c:'Seasoning',s:'Phuket',sp:'จี้ปาน ของแห้ง'},
+{n:'Palm Sugar',c:'Seasoning',s:'Songkhla',sp:'Hatch goodies'},
+{n:'Fish sauce',c:'Seasoning',s:'Samut Songkhram',sp:'โรงงานน้ำปลาชวนชื่น'},
+{n:'Soy sauce',c:'Seasoning',s:'Samut Sakhon',sp:'ตะวันทิพย์'},
+{n:'Vinegar',c:'Seasoning',s:'Samut Sakhon',sp:'ตะวันทิพย์'},
+{n:'Banana flower',c:'Vegetable',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Shallot',c:'Vegetable',s:'Si Sa Ket',sp:'คุณกิจจาพร'},
+{n:'Ruby corn',c:'Vegetable',s:'Saraburi',sp:'Go Organic'},
+{n:'Sweet corn',c:'Vegetable',s:'Saraburi',sp:'Go Organic'},
+{n:'Lemongrass stalk',c:'Vegetable',s:'Suphan Buri',sp:'Go Organic'},
+{n:'Cucumber',c:'Vegetable',s:'Pathum Thani',sp:'Go Organic'},
+{n:'Daikon',c:'Vegetable',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Pickled Daikon',c:'Vegetable',s:'Ratchaburi',sp:'ชฎา'},
+{n:'Okra',c:'Vegetable',s:'Our Garden Goat BKK',sp:'Our Garden'},
+{n:'Garlic',c:'Vegetable',s:'Yasothon',sp:'Go Organic'},
+{n:'Black Pepper',c:'Vegetable',s:'Chanthaburi',sp:'Go Organic'},
+{n:'Chili',c:'Vegetable',s:'Nakhon Pathom',sp:'Go Organic'},
+{n:'Sweet Potato',c:'Vegetable',s:'Chiang Mai',sp:'Go Organic'},
+{n:'Mushroom',c:'Vegetable',s:'Bangkok',sp:'Go Organic'},
+{n:'Tamarind',c:'Vegetable',s:'Phetchabun',sp:'Go Organic'},
+{n:'Taro',c:'Vegetable',s:'Chiang Rai',sp:'Go Organic'},
+{n:'Chinese Chives',c:'Vegetable',s:'Pathum Thani',sp:'Go Organic'},
+{n:'Rosella',c:'Vegetable',s:'Surin',sp:'Go Organic'}
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let DB = [...INGREDIENT_DB];
+let CUSTOM_SUPPLIERS = [];
+let CUSTOM_COURSES = ['Bangkok course','Koh Sichang course','Saraburi course','Nakhon Si Thammarat course','Gulf of Thailand course','Prachin Buri course','Phuket course','Khon Kaen course','Surat Thani course','Andaman course','Yala course','Chanthaburi course','Cheese Plate','Garden Tea Set','Petit Fours','Seasoning']; // live ingredient database (shared, can grow)
+let RECIPES = [];            // shared recipe bank across all creative roles
+let LOGS = {                 // all activity logs
+  sourcing:[],transport:[],waste:[],compost:[],energy:[],csr:[],comm:[]
+};
+let S = {role:null,page:'home',stars:0,selIngs:[],steps:[''],phase:1,wasteCat:'Organic waste',ovPeriod:'all',repPeriod:'all'};
+
+// ── GOOGLE SHEETS INTEGRATION ─────────────────────────────────────────────
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycby2iVwiSskGobmWgFtUjG5YJFf8CuHRuojzGgzgRxmyrc52TfDALfqS3OXITvHOHpam/exec';
+const DRIVE_FOLDER_ID = '1mTW2N_nRnC4xZJ-oLyevHvjN3zU5jMZG';
+let SHEETS_READY = false;
+
+async function uploadPhotoToDrive(base64DataUrl, fileName) {
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({
+        action: 'uploadPhoto',
+        base64: base64DataUrl,
+        fileName: fileName,
+        folderId: DRIVE_FOLDER_ID
+      })
+    });
+    const json = await res.json();
+    if (json.ok && json.data && json.data.url) return json.data.url;
+    console.warn('Photo upload response:', json);
+    return null;
+  } catch(e) {
+    console.warn('Photo upload failed:', e);
+    return null;
+  }
+}
+
+async function sheetSave(sheetName, rowData) {
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({action:'append', sheet:sheetName, row:rowData, ts:Date.now()})
+    });
+  } catch(e) {
+    console.warn('Sheets save failed:', e);
+  }
+}
+
+async function sheetLoad(sheetName) {
+  try {
+    const res = await fetch(SHEET_URL + '?sheet=' + encodeURIComponent(sheetName));
+    const json = await res.json();
+    return json.ok ? json.data : [];
+  } catch(e) {
+    console.warn('Sheets load failed:', e);
+    return [];
+  }
+}
+
+async function loadAllFromSheets() {
+  toast('🔄 Loading data from Google Sheets...');
+  try {
+    const [src, trp, wst, cmp, eng, csr, rec] = await Promise.all([
+      sheetLoad('1_Sourcing'),
+      sheetLoad('2_Transport'),
+      sheetLoad('3_Waste'),
+      sheetLoad('4_Compost'),
+      sheetLoad('6_Energy'),
+      sheetLoad('7_CSR'),
+      sheetLoad('8_Recipes'),
+    ]);
+
+    LOGS.sourcing = src.filter(r=>r['Ingredient']).map(r=>({
+      ts:Date.now(), date:r['Date (Thai)']||today(),
+      ingredient:r['Ingredient'], supplier:r['Supplier'],
+      province:r['Province / Origin'], srctype:r['Source Type'],
+      course:r['Course / Menu'], ref:r['Delivery Ref.'], note:r['Note']
+    }));
+
+    LOGS.transport = trp.filter(r=>r['Distance (km)']).map(r=>({
+      ts:Date.now(), date:r['Date']||today(),
+      ref:r['Delivery Ref.'], supplier:r['Supplier'],
+      direction:r['Direction'], vehicle:r['Vehicle'], fuel:r['Fuel'],
+      distance:+r['Distance (km)']||0, trips:+r['Trips']||1,
+      totalKm:+r['Total km']||0, co2e:+r['CO₂e (kg)']||0,
+      cargo:r['Cargo (kg)'], note:r['Note']
+    }));
+
+    LOGS.waste = wst.filter(r=>r['Waste Type']).map(r=>({
+      ts:Date.now(), date:r['Date']||today(),
+      wasteType:r['Waste Type'], weight:+r['Weight (kg)']||0,
+      category:r['Category'], action:r['Disposal Action']||'throw',
+      disposal:r['Disposal Action'], compostBatch:r['Compost Batch']||'',
+      note:r['Note']
+    }));
+
+    LOGS.compost = cmp.filter(r=>r['Batch #']).map(r=>({
+      ts:Date.now(), date:r['Start Date']||today(),
+      batch:r['Batch #'], status:r['Status']||'input',
+      material:r['Material Type'], inputKg:+r['Input kg']||0,
+      ratio:r['C:N Ratio'], note:r['Note (Input)']||'',
+      harvestDate:r['Harvest Date'], outputKg:+r['Output kg']||0,
+      reduction:+r['% Reduction']||0, usedAt:r['Used At']||''
+    }));
+
+    LOGS.energy = eng.filter(r=>r['Month']).map(r=>({
+      ts:Date.now(), date:today(), month:r['Month'],
+      elec:+r['Electricity (kWh)']||0, water:+r['Water (units)']||0,
+      gas:+r['LPG Gas (kg)']||0, fuel:+r['Fuel/Oil (L)']||0
+    }));
+
+    LOGS.csr = csr.filter(r=>r['Activity Name']).map(r=>({
+      ts:Date.now(), date:r['Date']||today(),
+      title:r['Activity Name'], type:r['Type'],
+      location:r['Location'], participants:r['Participants'],
+      details:r['Details']
+    }));
+
+    RECIPES = rec.filter(r=>r['Dish/Drink Name']).map(r=>({
+      ts:Date.now(), id:r['Recipe ID']||uid(), date:r['Date']||today(),
+      role:r['Role']||'peter', name:r['Dish/Drink Name'],
+      type:r['Type'], tech:r['Technique'],
+      serves:r['Serves'], ingredients:[], method:r['Method']||'',
+      notes:r['Chef Notes'], stars:+r['Rating ★']||0,
+      status:r['Status']||'Draft'
+    }));
+
+    SHEETS_READY = true;
+    toast('✓ Data loaded from Google Sheets');
+    navigate('home');
+  } catch(e) {
+    SHEETS_READY = true;
+    toast('⚠ Could not load Sheets — working offline');
+    navigate('home');
+  }
+}
+
+const EF={elec:0.4999,water:0.335,lpg:2.983,diesel:2.640,petrol:2.296};
+const TEF={'Pickup-Diesel':0.173,'Truck-Diesel':0.220,'Motorcycle-Petrol':0.103,'Van-Petrol':0.143,'EV-Electric':0.050};
+
+const ROLES={
+  fluke:{name:'Fluke',title:'Sous Chef',clr:'#14532D',bg:'#DCFCE7',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'sourcing',ic:'🌿',lb:'Sourcing'},{id:'usage',ic:'🍽',lb:'Usage'},{id:'recipe',ic:'📖',lb:'Recipes'},{id:'rd-view',ic:'🔬',lb:'R&D'}]},
+  yok:{name:'Yok',title:'Sous Chef',clr:'#431407',bg:'#FFEDD5',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'transport',ic:'🚚',lb:'Transport'},{id:'waste',ic:'🗑',lb:'Waste'},{id:'compost',ic:'🌱',lb:'Compost'},{id:'recipe',ic:'📖',lb:'My Recipes'}]},
+  staff:{name:'Staff',title:'Kitchen Staff',clr:'#134E4A',bg:'#CCFBF1',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'transport',ic:'🚚',lb:'Transport'},{id:'waste',ic:'🗑',lb:'Waste'},{id:'compost',ic:'🌱',lb:'Compost'},{id:'recipe',ic:'📖',lb:'Recipes'}]},
+  peter:{name:'Peter',title:'R&D Chef',clr:'#1C4532',bg:'#D1FAE5',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'develop',ic:'🔬',lb:'R&D'},{id:'rd-view',ic:'📖',lb:'My R&D'},{id:'waste-view',ic:'🗑',lb:'Waste'},{id:'ing-db',ic:'🌿',lb:'Ingredients'}]},
+  pastry:{name:'Pastry',title:'Pastry Chef',clr:'#831843',bg:'#FCE7F3',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'develop',ic:'🍰',lb:'Develop'},{id:'rd-view',ic:'📖',lb:'My R&D'},{id:'ing-db',ic:'🌿',lb:'Ingredients'}]},
+  mixo:{name:'Mixo',title:'Mixologist',clr:'#164E63',bg:'#CFFAFE',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'develop',ic:'🍹',lb:'Develop'},{id:'rd-view',ic:'📖',lb:'My R&D'},{id:'ing-db',ic:'🌿',lb:'Ingredients'}]},
+  joy:{name:'Joy',title:'Manager',clr:'#1E3A5F',bg:'#DBEAFE',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'energy',ic:'⚡',lb:'Energy'},{id:'carbon',ic:'🌍',lb:'Carbon'},{id:'csr',ic:'🤝',lb:'CSR'}]},
+  owner:{name:'Owner',title:'Owner',clr:'#1C1917',bg:'#F5F5F4',
+    tabs:[{id:'home',ic:'🏠',lb:'Home'},{id:'rep-summary',ic:'📊',lb:'Summary'},{id:'rep-carbon',ic:'🌍',lb:'Carbon'},{id:'rep-all',ic:'📋',lb:'All Data'}]},
+};
+
+
+// ── PASSWORDS — โหลดจาก Google Sheet "Passwords" ────────────────────────
+// แก้รหัสผ่านได้ที่ Google Sheet → Sheet ชื่อ "Passwords" คอลัมน์ Role / Password
+let PASSWORDS = {
+  fluke:  'Goat@2025',
+  yok:    'Goat@2025',
+  peter:  'Goat@2025',
+  pastry: 'Goat@2025',
+  mixo:   'Goat@2025',
+  joy:    'Goat@2025',
+  owner:  'Goat@2025',
+  staff:  'Goat@2025',
+};
+
+async function loadPasswordsFromSheet(){
+  try {
+    const res = await fetch(SHEET_URL + '?sheet=' + encodeURIComponent('Passwords'));
+    const json = await res.json();
+    if(json.ok && json.data){
+      json.data.forEach(row => {
+        const role = (row['Role']||'').toLowerCase().trim();
+        const pw   = (row['Password']||'').trim();
+        if(role && pw) PASSWORDS[role] = pw;
+      });
+    }
+  } catch(e){
+    // ใช้ default password ถ้าโหลดไม่ได้
+    console.warn('Could not load passwords from Sheets, using defaults');
+  }
+}
+function today(){const d=new Date();return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543}`;}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────
+function pick(r){
+  S.role=r;
+  document.querySelectorAll('.rb,.rb-owner').forEach(b=>b.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+  const pwWrap=document.getElementById('pw-wrap');
+  const pwInput=document.getElementById('pw-input');
+  const pwLabel=document.getElementById('pw-label');
+  if(pwWrap) pwWrap.style.display='block';
+  if(pwLabel) pwLabel.textContent='Password for '+ROLES[r].name;
+  if(pwInput){ pwInput.value=''; pwInput.focus(); }
+  document.getElementById('lbtn').disabled=true;
+}
+function checkPassword(){
+  const pw=document.getElementById('pw-input')?.value;
+  const correct=PASSWORDS[S.role];
+  const errEl=document.getElementById('pw-error');
+  if(pw===correct){
+    if(errEl) errEl.textContent='';
+    document.getElementById('lbtn').disabled=false;
+  } else {
+    document.getElementById('lbtn').disabled=true;
+    if(errEl&&pw.length>0) errEl.textContent='❌ Incorrect password';
+    else if(errEl) errEl.textContent='';
+  }
+}
+function togglePwVis(){
+  const inp=document.getElementById('pw-input');
+  const eye=document.getElementById('pw-eye');
+  if(!inp)return;
+  inp.type=inp.type==='password'?'text':'password';
+  if(eye)eye.textContent=inp.type==='password'?'👁':'🙈';
+}
+function doLogin(){
+  if(!S.role)return;
+  document.getElementById('ls').style.display='none';
+  document.getElementById('app').style.display='flex';
+  const ro=ROLES[S.role];
+  const badge=document.getElementById('rdbadge');
+  if(badge){badge.textContent=ro.name;badge.style.background=ro.bg;badge.style.color=ro.clr;}
+  renderNav();
+  // Show loading screen then pull from Sheets
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px">
+    <div style="font-size:40px">🌿</div>
+    <div style="font-size:15px;font-weight:600;color:var(--offblack)">Loading GOAT data...</div>
+    <div style="font-size:12px;color:var(--muted)">Connecting to Google Sheets</div>
+  </div>`;
+  loadAllFromSheets();
+}
+function openLogout(){
+  showModal('👋','Log out?','Unsaved session data will be cleared.','Log out','var(--rd-d)',doLogout);
+}
+function doLogout(){
+  closeModal();S={role:null,page:'home',stars:0,selIngs:[],steps:[''],phase:1,wasteCat:'Organic waste',ovPeriod:'all',repPeriod:'all'};
+  const pw=document.getElementById('pw-wrap');
+  if(pw)pw.style.display='none';
+  const pi=document.getElementById('pw-input');
+  if(pi)pi.value='';
+  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('lbtn').disabled=true;
+  document.getElementById('app').style.display='none';
+  document.getElementById('ls').style.display='flex';
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+let _modalOk=null;
+function showModal(ico,title,msg,okTxt,okClr,okFn){
+  _modalOk=okFn;
+  document.getElementById('m-ico').textContent=ico;
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-msg').textContent=msg;
+  const ob=document.getElementById('m-ok');
+  ob.textContent=okTxt;ob.style.background=okClr.replace('var(--rd-d)','#7F1D1D').replace('var(--black)','#0A0A0A');
+  ob.onclick=()=>{closeModal();if(_modalOk)_modalOk();};
+  const mo=document.getElementById('modal-overlay');mo.style.display='flex';mo.style.alignItems='flex-end';mo.style.justifyContent='center';
+}
+function closeModal(){document.getElementById('modal-overlay').style.display='none';}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function toast(msg,ms=1800){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>{t.classList.remove('show');},ms);
+}
+function toastSave(msg){toast('✓ '+msg);setTimeout(()=>navigate('home'),1850);}
+
+// ── NAV ───────────────────────────────────────────────────────────────────
+function renderNav(){
+  const ro=ROLES[S.role];
+  const nt=document.getElementById('ntabs');
+  nt.innerHTML=ro.tabs.map(t=>`
+    <button class="ntab${S.page===t.id?' active':''}" onclick="navigate('${t.id}')">
+      <span class="ni">${t.ic}</span><span class="nl">${t.lb}</span>
+    </button>`).join('');
+}
+function navigate(pg){
+  S.page=pg;
+  S.selIngs=[];S.steps=[''];S.stars=0;ING_ROWS=[];SEL_TECHS=[];
+  const backBtn=document.getElementById('back-btn');
+  if(backBtn)backBtn.classList.toggle('hidden',pg==='home');
+  renderNav();
+  const titles={
+    home:'',sourcing:'Sourcing',transport:'Transport Log',
+    waste:'Waste',compost:'Compost',energy:'Energy & Water',
+    carbon:'Carbon Footprint',csr:'CSR & Staff',develop:'Develop New',
+    'rd-view':'R&D Recipes','ing-db':'Ingredient Database',
+    recipe:'My Recipes','add-ing':'Add Ingredient',usage:'Ingredient Usage',
+    'rep-summary':'Summary','rep-carbon':'Carbon Report','rep-all':'All Records',
+  };
+  const titleEl=document.getElementById('tbtitle');
+  if(titleEl)titleEl.textContent=titles[pg]||'';
+  const mc=document.getElementById('mc');mc.innerHTML='';
+  const pages={
+    home:renderHome,sourcing:renderSourcing,transport:renderTransport,
+    waste:renderWaste,compost:renderCompost,energy:renderEnergy,
+    carbon:renderCarbon,csr:renderCSR,develop:renderDevelop,
+    'rd-view':renderRdView,'ing-db':renderIngDb,recipe:renderMyRecipes,
+    'add-ing':renderAddIng,usage:renderUsage,'waste-view':renderWasteView,'sourcing-history':renderSourcingHistory,
+    'rep-summary':renderRepSummary,'rep-carbon':renderRepCarbon,'rep-all':renderRepAll,
+  };
+  if(pages[pg])pages[pg](mc);
+}
+function goBack(){navigate('home');}
+
+// ── HOME ─────────────────────────────────────────────────────────────────
+function renderHome(el){
+  if(S.role==='owner'){renderOwnerHome(el);return;}
+  const ro=ROLES[S.role];
+  const scope3=LOGS.transport.reduce((s,r)=>s+(r.co2e||0),0);
+  const wt=LOGS.waste.reduce((s,r)=>s+(+r.weight||0),0);
+  const myRec=RECIPES.filter(r=>r.role===S.role);
+  const menus={
+    fluke:[
+      {pg:'sourcing',ic:'🌿',ibg:'#DCFCE7',nm:'Log Sourcing',ds:'Supplier · Distance · Course',bd:'S1',bbg:'#DCFCE7',btc:'#14532D'},
+      {pg:'usage',ic:'🍽',ibg:'#DCFCE7',nm:'Ingredient Usage',ds:'Dish · technique · %Waste auto',bd:'S3',bbg:'#DCFCE7',btc:'#14532D'},
+      {pg:'recipe',ic:'📖',ibg:'#DCFCE7',nm:'My Recipes',ds:'Create & view your recipes',bd:`${myRec.length}`,bbg:'#DCFCE7',btc:'#14532D'},
+      {pg:'rd-view',ic:'🔬',ibg:'#EDE9FE',nm:'R&D Library',ds:'All R&D recipes (full access)',bd:`${RECIPES.length}`,bbg:'#EDE9FE',btc:'#3B0764'},
+      {pg:'ing-db',ic:'🌿',ibg:'#F0FDF4',nm:'Ingredient DB',ds:'View & add ingredients',bd:`${DB.length}`,bbg:'#F0FDF4',btc:'#14532D'},
+    ],
+    yok:[
+      {pg:'transport',ic:'🚚',ibg:'#FFEDD5',nm:'Log Transport',ds:'km actual · vehicle · CO₂e',bd:'S2',bbg:'#FFEDD5',btc:'#431407'},
+      {pg:'waste',ic:'🗑',ibg:'#CCFBF1',nm:'Log Waste',ds:'Type · weight · disposal',bd:'S5',bbg:'#CCFBF1',btc:'#134E4A'},
+      {pg:'compost',ic:'🌱',ibg:'#CCFBF1',nm:'Compost Cycle',ds:'Input → Harvest',bd:'S6',bbg:'#CCFBF1',btc:'#134E4A'},
+      {pg:'recipe',ic:'📖',ibg:'#FFEDD5',nm:'My Recipes',ds:'Create & view your recipes',bd:`${myRec.length}`,bbg:'#FFEDD5',btc:'#431407'},
+    ],
+    pastry:[
+      {pg:'develop',ic:'🍰',ibg:'#FCE7F3',nm:'Develop New',ds:'Recipe · ingredients · steps',bd:'Create',bbg:'#FCE7F3',btc:'#831843'},
+      {pg:'rd-view',ic:'📖',ibg:'#EDE9FE',nm:'My R&D',ds:'Your own recipes',bd:`${RECIPES.filter(r=>r.role==='pastry').length}`,bbg:'#EDE9FE',btc:'#3B0764'},
+      {pg:'ing-db',ic:'🌿',ibg:'#F0FDF4',nm:'Ingredient DB',ds:`${DB.length} ingredients`,bd:'DB',bbg:'#F0FDF4',btc:'#14532D'},
+    ],
+    peter:[
+      {pg:'develop',ic:'🔬',ibg:'#D1FAE5',nm:'R&D — Develop New',ds:'Recipe · ingredients · steps',bd:'Create',bbg:'#D1FAE5',btc:'#1C4532'},
+      {pg:'rd-view',ic:'📖',ibg:'#D1FAE5',nm:'My R&D',ds:'Your own recipes',bd:`${RECIPES.filter(r=>r.role==='peter').length}`,bbg:'#D1FAE5',btc:'#1C4532'},
+      {pg:'ing-db',ic:'🌿',ibg:'#F0FDF4',nm:'Ingredient DB',ds:`${DB.length} ingredients · add new`,bd:'DB',bbg:'#F0FDF4',btc:'#14532D'},
+    ],
+    mixo:[
+      {pg:'develop',ic:'🍹',ibg:'#CFFAFE',nm:'Develop New',ds:'Recipe · ingredients · steps',bd:'Create',bbg:'#CFFAFE',btc:'#164E63'},
+      {pg:'rd-view',ic:'📖',ibg:'#EDE9FE',nm:'My R&D',ds:'Your own recipes',bd:`${RECIPES.filter(r=>r.role==='mixo').length}`,bbg:'#EDE9FE',btc:'#3B0764'},
+      {pg:'ing-db',ic:'🌿',ibg:'#F0FDF4',nm:'Ingredient DB',ds:`${DB.length} ingredients`,bd:'DB',bbg:'#F0FDF4',btc:'#14532D'},
+    ],
+    joy:[
+      {pg:'energy',ic:'⚡',ibg:'#DBEAFE',nm:'Energy & Water',ds:'Electricity · gas · water',bd:'S4',bbg:'#DBEAFE',btc:'#1E3A5F'},
+      {pg:'carbon',ic:'🌍',ibg:'#FEE2E2',nm:'Carbon Dashboard',ds:`Scope 1+2+3 · ${(scope3/1000).toFixed(3)} ton S3`,bd:'S7',bbg:'#FEE2E2',btc:'#7F1D1D'},
+      {pg:'csr',ic:'🤝',ibg:'#FEF3C7',nm:'CSR & Staff',ds:'Activities · donations',bd:'S10',bbg:'#FEF3C7',btc:'#451A03'},
+    ],
+  };
+  el.innerHTML=`
+    <div class="hh" style="background:${ro.clr}">
+      <div style="font-size:11px;opacity:.65;margin-bottom:3px">Good day, ${ro.name}</div>
+      <div style="font-size:19px;font-weight:700">GOAT Sustainability</div>
+      <div style="font-size:11px;opacity:.6;margin-top:2px">${today()}</div>
+      <div style="display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;padding:3px 11px;font-size:11px;margin-top:9px">${ro.title}</div>
+    </div>
+    <div class="kgrid">
+      <div class="kcard gn"><div class="kl">Sourcing logged</div><div class="kv">${LOGS.sourcing.length}<span class="ku"> items</span></div></div>
+      <div class="kcard rd"><div class="kl">Waste total</div><div class="kv">${wt.toFixed(1)}<span class="ku"> kg</span></div></div>
+      <div class="kcard bl"><div class="kl">Transport CO₂e</div><div class="kv">${(scope3/1000).toFixed(3)}<span class="ku"> t</span></div></div>
+      <div class="kcard pu"><div class="kl">R&D Recipes</div><div class="kv">${RECIPES.length}<span class="ku"> total</span></div></div>
+    </div>
+    <div class="stl">Quick Access</div>
+    <div class="mcard">
+      ${(menus[S.role]||[]).map(m=>`
+        <button class="mi" onclick="navigate('${m.pg}')">
+          <div class="iw" style="background:${m.ibg}">${m.ic}</div>
+          <div class="inf"><div class="mn">${m.nm}</div><div class="md">${m.ds}</div></div>
+          <span class="mbg" style="background:${m.bbg};color:${m.btc}">${m.bd}</span>
+          <span class="chv">›</span>
+        </button>`).join('')}
+    </div>
+    ${recentEntries()}`;
+}
+
+function recentEntries(){
+  const all=[
+    ...LOGS.sourcing.map(r=>({...r,type:'Sourcing',sub:r.supplier||''})),
+    ...LOGS.transport.map(r=>({...r,type:'Transport',sub:`${r.totalKm||0} km`})),
+    ...LOGS.waste.map(r=>({...r,type:'Waste',sub:`${r.weight||0} kg`})),
+    ...RECIPES.map(r=>({...r,type:'Recipe',sub:r.role})),
+  ].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,4);
+  if(!all.length)return'';
+  return`<div class="stl">Recent Activity</div>`+all.map(e=>`
+    <div class="ec">
+      <div class="et"><span class="etitle">${esc(e.name||e.ingredient||e.supplier||e.dish||'—')}</span><span class="edate">${e.date||today()}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span class="esub">${esc(e.sub||'')}</span>
+        <span class="pill gn">${e.type}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── SOURCING ─────────────────────────────────────────────────────────────
+function getSourcingSuppliers(){
+  return [...new Set([...DB.map(i=>i.sp).filter(Boolean),...CUSTOM_SUPPLIERS])].sort();
+}
+function renderSourcing(el){
+  const supList=getSourcingSuppliers();
+  const courseList=[...CUSTOM_COURSES];
+  el.innerHTML=`
+    <div class="ibox gn">📌 Log every ingredient delivery. Search from database or type a new name.</div>
+    <div class="fs">
+      <div class="fst">Ingredient</div>
+      <div class="fi"><label>Date</label><div class="av gn">${today()}</div></div>
+
+      <!-- Mode toggle -->
+      <div style="padding:10px 14px;border-bottom:1px solid var(--gray2);display:flex;gap:8px">
+        <button id="si-mode-search" onclick="si_setMode('search')" style="flex:1;padding:9px;border-radius:var(--rs);border:2px solid #0A0A0A;background:#0A0A0A;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">🔍 Search DB</button>
+        <button id="si-mode-new" onclick="si_setMode('new')" style="flex:1;padding:9px;border-radius:var(--rs);border:2px solid var(--gray2);background:var(--white);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">+ New Ingredient</button>
+      </div>
+
+      <!-- SEARCH MODE -->
+      <div id="si-search-panel" style="padding:10px 14px;border-bottom:1px solid var(--gray2)">
+        <input id="si-ing-search" placeholder="Type to search ingredient database..." autocomplete="off"
+          style="width:100%;padding:10px 12px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);outline:none;background:var(--white);color:var(--offblack);margin-bottom:8px"
+          oninput="si_filterSearch(this.value)"/>
+        <div id="si-search-results" style="max-height:200px;overflow-y:auto;border:1px solid var(--gray2);border-radius:var(--rs);display:none"></div>
+        <div id="si-selected-ing" style="display:none;padding:8px 11px;background:#F0FDF4;border-radius:var(--rs);border:1.5px solid #16A34A;font-size:13px;font-weight:600;color:#14532D;display:flex;align-items:center;justify-content:space-between">
+          <span id="si-selected-name">—</span>
+          <button onclick="si_clearIng()" style="background:none;border:none;color:#6B7280;cursor:pointer;font-size:16px;line-height:1;padding:0 2px">×</button>
+        </div>
+      </div>
+
+      <!-- NEW MODE -->
+      <div id="si-new-panel" style="padding:10px 14px;border-bottom:1px solid var(--gray2);display:none">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="si-new-name" placeholder="Ingredient name (will be added to database)" 
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);outline:none;background:var(--white);color:var(--offblack)"/>
+          <div style="display:flex;gap:7px">
+            <select id="si-new-cat" style="flex:1;padding:9px 10px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:12px;font-family:var(--font-body);outline:none;background:var(--white)">
+              <option>Vegetable</option><option>Fruit</option><option>Seafood</option><option>Meat</option>
+              <option>Herb/Spice</option><option>Dairy Product</option><option>Flower/Edible Flower</option>
+              <option>Seasoning</option><option>Beverage Base</option><option>Nuts/Seeds</option><option>Other</option>
+            </select>
+            <button onclick="si_saveNewIng()" style="padding:9px 16px;background:#0A0A0A;color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap">+ Add & Use</button>
+          </div>
+          <div id="si-new-note" style="font-size:11px;color:#6B7280"></div>
+        </div>
+      </div>
+
+      <!-- Hidden value holder -->
+      <input type="hidden" id="si-ing" value=""/>
+    </div>
+    <div class="fs">
+      <div class="fst">Supplier & Province</div>
+      <div class="fi">
+        <label>Supplier</label>
+        <div style="flex:1;display:flex;gap:7px;align-items:center;min-width:0">
+          <select id="si-sup" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;-webkit-appearance:none;cursor:pointer;color:var(--offblack);min-width:0">
+            <option value="">— select —</option>
+            ${supList.map(s=>'<option>'+esc(s)+'</option>').join('')}
+          </select>
+          <button onclick="sourcing_toggleNew('si-sup-new')" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--gray2);border-radius:20px;background:transparent;cursor:pointer;font-family:var(--font-body);color:var(--muted);white-space:nowrap;flex-shrink:0">+ New</button>
+        </div>
+      </div>
+      <div id="si-sup-new" class="hidden" style="padding:10px 16px;border-top:1px solid var(--gray2);background:var(--gray)">
+        <div style="display:flex;gap:7px">
+          <input id="si-newsup" placeholder="New supplier name" style="flex:1;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);outline:none;background:var(--white)"/>
+          <button onclick="sourcing_addNewSupplier()" style="padding:8px 14px;background:#0A0A0A;color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">+ Add</button>
+        </div>
+      </div>
+      <div class="fi"><label>Province / Origin</label>
+        <div style="flex:1;display:flex;gap:7px;align-items:center;min-width:0">
+          <select id="si-province" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;-webkit-appearance:none;cursor:pointer;color:var(--offblack);min-width:0">
+            <option value="">— select province —</option>
+            <option>Bangkok</option>
+<option>Amnat Charoen</option>
+<option>Ang Thong</option>
+<option>Bueng Kan</option>
+<option>Buri Ram</option>
+<option>Chachoengsao</option>
+<option>Chai Nat</option>
+<option>Chaiyaphum</option>
+<option>Chanthaburi</option>
+<option>Chiang Mai</option>
+<option>Chiang Rai</option>
+<option>Chon Buri</option>
+<option>Chumphon</option>
+<option>Kalasin</option>
+<option>Kamphaeng Phet</option>
+<option>Kanchanaburi</option>
+<option>Khon Kaen</option>
+<option>Krabi</option>
+<option>Lampang</option>
+<option>Lamphun</option>
+<option>Loei</option>
+<option>Lop Buri</option>
+<option>Mae Hong Son</option>
+<option>Maha Sarakham</option>
+<option>Mukdahan</option>
+<option>Nakhon Nayok</option>
+<option>Nakhon Pathom</option>
+<option>Nakhon Phanom</option>
+<option>Nakhon Ratchasima</option>
+<option>Nakhon Sawan</option>
+<option>Nakhon Si Thammarat</option>
+<option>Nan</option>
+<option>Narathiwat</option>
+<option>Nong Bua Lam Phu</option>
+<option>Nong Khai</option>
+<option>Nonthaburi</option>
+<option>Pathum Thani</option>
+<option>Pattani</option>
+<option>Phang Nga</option>
+<option>Phatthalung</option>
+<option>Phayao</option>
+<option>Phetchabun</option>
+<option>Phetchaburi</option>
+<option>Phichit</option>
+<option>Phitsanulok</option>
+<option>Phra Nakhon Si Ayutthaya</option>
+<option>Phrae</option>
+<option>Phuket</option>
+<option>Prachin Buri</option>
+<option>Prachuap Khiri Khan</option>
+<option>Ranong</option>
+<option>Ratchaburi</option>
+<option>Rayong</option>
+<option>Roi Et</option>
+<option>Sa Kaeo</option>
+<option>Sakon Nakhon</option>
+<option>Samut Prakan</option>
+<option>Samut Sakhon</option>
+<option>Samut Songkhram</option>
+<option>Saraburi</option>
+<option>Satun</option>
+<option>Sing Buri</option>
+<option>Si Sa Ket</option>
+<option>Songkhla</option>
+<option>Sukhothai</option>
+<option>Suphan Buri</option>
+<option>Surat Thani</option>
+<option>Surin</option>
+<option>Tak</option>
+<option>Trang</option>
+<option>Trat</option>
+<option>Ubon Ratchathani</option>
+<option>Udon Thani</option>
+<option>Uthai Thani</option>
+<option>Uttaradit</option>
+<option>Yala</option>
+<option>Yasothon</option>
+<option>Koh Sichang (Chon Buri)</option>
+<option>Our Garden Goat BKK</option>
+<option>Throughout Thailand</option>
+<option>Imported</option>
+          </select>
+        </div>
+      </div>
+      <div class="fi"><label>Source Type</label>
+        <select id="si-type" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;-webkit-appearance:none;cursor:pointer;color:var(--offblack)">
+          <option>Farm Direct</option><option>Organic Supplier</option><option>Fisherman/Seafood</option><option>Our Garden</option><option>Distributor</option><option>Imported</option>
+        </select>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="fst">Course & Reference</div>
+      <div class="fi">
+        <label>Course/Menu</label>
+        <div style="flex:1;display:flex;gap:7px;align-items:center;min-width:0">
+          <select id="si-course" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;-webkit-appearance:none;cursor:pointer;color:var(--offblack);min-width:0">
+            ${courseList.map(c=>'<option>'+esc(c)+'</option>').join('')}
+          </select>
+          <button onclick="sourcing_toggleNew('si-course-new')" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--gray2);border-radius:20px;background:transparent;cursor:pointer;font-family:var(--font-body);color:var(--muted);white-space:nowrap;flex-shrink:0">+ New</button>
+        </div>
+      </div>
+      <div id="si-course-new" class="hidden" style="padding:10px 16px;border-top:1px solid var(--gray2);background:var(--gray)">
+        <div style="display:flex;gap:7px">
+          <input id="si-newcourse" placeholder="New course / menu name" style="flex:1;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:var(--rs);font-size:13px;font-family:var(--font-body);outline:none;background:var(--white)"/>
+          <button onclick="sourcing_addNewCourse()" style="padding:8px 14px;background:#0A0A0A;color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">+ Add</button>
+        </div>
+      </div>
+      <div class="fi"><label>Delivery Ref.</label><input id="si-ref" placeholder="e.g. DEL-001 (from Transport)"/></div>
+      <div class="fi"><label>Note</label><input id="si-note" placeholder="Any notes..."/></div>
+    </div>
+    <div class="fs">
+      <div class="fst">Photo</div>
+      <div class="pf"><div class="photo-zone"><div class="photo-thumbs" id="pt-sourcing">
+        <label class="photo-add-btn">
+          <input type="file" accept="image/*" multiple onchange="addPhotos('sourcing',this)" style="display:none"/>
+          <span style="font-size:22px">📷</span><span>Add photo</span>
+        </label>
+      </div></div></div>
+    </div>
+    <div class="stl" style="margin-top:4px">Recent Sourcing (${LOGS.sourcing.length} records)</div>
+    <div>${sourcingHistory()}</div>
+    <button class="sbtn gn" onclick="saveSourcing()">Save Sourcing Record</button>
+  `;
+}
+function sourcing_toggleNew(id){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('hidden');
+}
+
+// ── INGREDIENT 2-MODE SYSTEM ─────────────────────────────────────────────
+let SI_MODE = 'search'; // 'search' | 'new'
+
+function si_setMode(mode){
+  SI_MODE = mode;
+  const sp = document.getElementById('si-search-panel');
+  const np = document.getElementById('si-new-panel');
+  const bs = document.getElementById('si-mode-search');
+  const bn = document.getElementById('si-mode-new');
+  if(mode === 'search'){
+    if(sp) sp.style.display = 'block';
+    if(np) np.style.display = 'none';
+    if(bs){ bs.style.background='#0A0A0A'; bs.style.color='#fff'; bs.style.borderColor='#0A0A0A'; }
+    if(bn){ bn.style.background='var(--white)'; bn.style.color='var(--muted)'; bn.style.borderColor='var(--gray2)'; }
+    document.getElementById('si-ing-search')?.focus();
+  } else {
+    if(sp) sp.style.display = 'none';
+    if(np) np.style.display = 'block';
+    if(bn){ bn.style.background='#0A0A0A'; bn.style.color='#fff'; bn.style.borderColor='#0A0A0A'; }
+    if(bs){ bs.style.background='var(--white)'; bs.style.color='var(--muted)'; bs.style.borderColor='var(--gray2)'; }
+    document.getElementById('si-new-name')?.focus();
+  }
+}
+
+function si_filterSearch(q){
+  const res = document.getElementById('si-search-results');
+  const sel = document.getElementById('si-selected-ing');
+  if(!res) return;
+  if(!q || q.length < 1){ res.style.display='none'; return; }
+  const results = DB.filter(i => i.n.toLowerCase().includes(q.toLowerCase())).slice(0,25);
+  if(!results.length){ res.innerHTML='<div style="padding:12px;color:var(--hint);font-size:12px;text-align:center">No results — switch to "+ New" to add</div>'; res.style.display='block'; return; }
+  res.innerHTML = '';
+  results.forEach(item => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--gray2);font-size:13px;display:flex;justify-content:space-between;align-items:center';
+    div.innerHTML = '<span style="font-weight:500">'+esc(item.n)+'</span><span style="font-size:11px;color:var(--muted)">'+esc(item.c)+(item.s?' · '+esc(item.s):'')+'</span>';
+    div.addEventListener('mousedown', e => {
+      e.preventDefault();
+      si_selectIng(item.n, item.s);
+    });
+    div.addEventListener('mouseover', ()=>{ div.style.background='var(--gray)'; });
+    div.addEventListener('mouseout', ()=>{ div.style.background=''; });
+    res.appendChild(div);
+  });
+  res.style.display = 'block';
+}
+
+function si_selectIng(name, province){
+  // Set hidden value
+  const inp = document.getElementById('si-ing');
+  if(inp) inp.value = name;
+  // Show selected chip
+  const sel = document.getElementById('si-selected-ing');
+  const nm = document.getElementById('si-selected-name');
+  if(sel){ sel.style.display='flex'; }
+  if(nm) nm.textContent = name;
+  // Hide results & clear search
+  const res = document.getElementById('si-search-results');
+  if(res) res.style.display = 'none';
+  const srch = document.getElementById('si-ing-search');
+  if(srch) srch.value = '';
+  // Auto-fill province
+  if(province){
+    const prov = document.getElementById('si-province');
+    if(prov && !prov.value) prov.value = province;
+  }
+}
+
+function si_clearIng(){
+  const inp = document.getElementById('si-ing');
+  if(inp) inp.value = '';
+  const sel = document.getElementById('si-selected-ing');
+  if(sel) sel.style.display = 'none';
+  const srch = document.getElementById('si-ing-search');
+  if(srch){ srch.value = ''; srch.focus(); }
+}
+
+function si_saveNewIng(){
+  const nameEl = document.getElementById('si-new-name');
+  const name = nameEl?.value.trim();
+  if(!name){ toast('⚠ Enter ingredient name'); return; }
+  const note = document.getElementById('si-new-note');
+  if(DB.find(i => i.n.toLowerCase() === name.toLowerCase())){
+    // Already exists — just select it
+    si_selectIng(name, '');
+    si_setMode('search');
+    if(note) note.textContent = '';
+    if(nameEl) nameEl.value = '';
+    toast('✓ Found in database — selected');
+    return;
+  }
+  const cat = document.getElementById('si-new-cat')?.value || 'Other';
+  DB.push({n:name, c:cat, s:'', sp:'', isNew:true});
+  si_selectIng(name, '');
+  si_setMode('search');
+  if(note) note.textContent = '';
+  if(nameEl) nameEl.value = '';
+  toast('✓ "'+name+'" added to database & selected');
+}
+
+// Keep old functions for backward compat (used elsewhere)
+function sourcing_filterIng(q){}
+function sourcing_addNewIng(){}
+function sourcing_addNewSupplier(){
+  const name=document.getElementById('si-newsup')?.value.trim();
+  if(!name){toast('⚠ Enter supplier name');return;}
+  if(CUSTOM_SUPPLIERS.includes(name)){toast('Already exists');return;}
+  CUSTOM_SUPPLIERS.push(name);
+  const sel=document.getElementById('si-sup');
+  if(sel){const opt=document.createElement('option');opt.value=name;opt.textContent=name;opt.selected=true;sel.appendChild(opt);}
+  document.getElementById('si-sup-new')?.classList.add('hidden');
+  toast('✓ Supplier "'+name+'" added');
+}
+function sourcing_addNewCourse(){
+  const name=document.getElementById('si-newcourse')?.value.trim();
+  if(!name){toast('⚠ Enter course name');return;}
+  if(CUSTOM_COURSES.includes(name)){toast('Already exists');return;}
+  CUSTOM_COURSES.push(name);
+  const sel=document.getElementById('si-course');
+  if(sel){const opt=document.createElement('option');opt.value=name;opt.textContent=name;opt.selected=true;sel.appendChild(opt);}
+  document.getElementById('si-course-new')?.classList.add('hidden');
+  toast('✓ Course "'+name+'" added');
+}
+
+
+function filterIngInput(q,listId){
+  const el=document.getElementById(listId);
+  const filtered=DB.filter(i=>i.n.toLowerCase().includes(q.toLowerCase())).slice(0,30);
+  el.innerHTML=filtered.map(i=>`<div class="io" onclick="selectIngRow(this,'${i.n.replace(/'/g,"\'")}')"><span class="in">${esc(i.n)}</span><span class="im">${esc(i.c)}</span></div>`).join('');
+}
+function ingOptions(q=''){
+  return DB.filter(i=>!q||i.n.toLowerCase().includes(q.toLowerCase())).slice(0,40)
+    .map(i=>`<div class="io" onclick="selectIngRow(this,'${i.n.replace(/'/g,"\'")}')"><span class="in">${esc(i.n)}</span><span class="im">${esc(i.c)} · ${esc(i.s)}</span></div>`).join('');
+}
+function selectIngRow(el,name){
+  document.querySelectorAll('#si-ing-list .io').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  const inp=document.getElementById('si-ing');
+  if(inp)inp.value=name;
+}
+async function saveSourcing(){
+  const ing=document.getElementById('si-ing')?.value.trim();
+  if(!ing){toast('⚠ Enter ingredient name');return;}
+  const entry={ts:Date.now(),date:today(),ingredient:ing,
+    supplier:document.getElementById('si-sup')?.value,
+    province:document.getElementById('si-province')?.value,
+    srctype:document.getElementById('si-type')?.value,
+    course:document.getElementById('si-course')?.value,
+    ref:document.getElementById('si-ref')?.value,
+    note:document.getElementById('si-note')?.value};
+  LOGS.sourcing.push(entry);
+
+  // Wait for any pending photo uploads to finish
+  const photos = PHOTO_STORE['sourcing']||[];
+  if(photos.some(p=>p.uploading)){
+    toast('⏳ รอรูปอัปโหลดเสร็จก่อน...');
+    await new Promise(r=>setTimeout(r,3000));
+  }
+  const photoUrls = photos.map(p=>p.driveUrl||'').join(', ') || '';
+  entry.photoUrls = photoUrls;
+  sheetSave('1_Sourcing',[entry.date,entry.ingredient,entry.supplier,entry.province,entry.srctype,entry.course,entry.ref,entry.note,photoUrls,S.role]);
+  toastSave(`Sourcing: ${ing}`);
+}
+
+
+// ── SOURCING HISTORY ─────────────────────────────────────────────────────
+function srcDel(btn){
+  const idx=parseInt(btn.getAttribute('data-si'));
+  LOGS.sourcing.splice(idx,1);
+  const pg=S.page;
+  navigate(pg);
+  toast('✓ Record deleted');
+}
+function sourcingHistory(){
+  if(!LOGS.sourcing.length) return '<div style="padding:10px 0;color:var(--hint);font-size:12px;text-align:center">No sourcing records yet.</div>';
+  return LOGS.sourcing.slice().reverse().slice(0,10).map((r,i)=>{
+    const idx = LOGS.sourcing.length-1-i;
+    // Get photos — from PHOTO_STORE (session) or driveUrls saved on record
+    const photos = (PHOTO_STORE['sourcing_'+r.ts]||PHOTO_STORE['sourcing']||[]);
+    const driveUrls = r.photoUrls ? r.photoUrls.split(', ').filter(Boolean) : [];
+    const allPhotos = [...driveUrls, ...photos.map(p=>p.driveUrl||p.dataUrl||'').filter(Boolean)];
+    return `<div class="ec" style="margin-bottom:7px">
+      <div class="et">
+        <span class="etitle">${esc(r.ingredient||'—')}</span>
+        <span class="edate">${r.date}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;align-items:center">
+        ${r.supplier?`<span class="pill gn">${esc(r.supplier)}</span>`:''}
+        ${r.province?`<span class="pill bl">${esc(r.province)}</span>`:''}
+        ${r.course?`<span class="pill am" style="background:#FEF3C7;color:#451A03">${esc(r.course)}</span>`:''}
+      </div>
+      ${r.note?`<div style="font-size:11px;color:var(--muted);margin-top:3px;font-style:italic">${esc(r.note)}</div>`:''}
+      ${allPhotos.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">
+        ${allPhotos.map(url=>`<img src="${url}" onclick="window.open('${url}','_blank')" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--gray2);cursor:pointer"/>`).join('')}
+      </div>`:''}
+      <button class="edel" onclick="delLog('sourcing',${idx},this)">×</button>
+    </div>`;
+  }).join('');
+}
+
+function renderSourcingHistory(el){
+  const byDate = {};
+  LOGS.sourcing.slice().reverse().forEach(r=>{
+    if(!byDate[r.date]) byDate[r.date]=[];
+    byDate[r.date].push(r);
+  });
+  const totalKg = LOGS.sourcing.length;
+  const suppliers = [...new Set(LOGS.sourcing.map(r=>r.supplier).filter(Boolean))];
+  const provinces = [...new Set(LOGS.sourcing.map(r=>r.province).filter(Boolean))];
+
+  let html = '';
+  html += '<div class="page-header"><h2>Sourcing History</h2><p>'+LOGS.sourcing.length+' records · '+suppliers.length+' suppliers · '+provinces.length+' provinces</p></div>';
+  
+  // Summary KPIs
+  html += '<div class="kpi-grid" style="margin-bottom:16px">'
+    + '<div class="kpi-card kpi1"><div class="kl">Total records</div><div><div class="kv">'+LOGS.sourcing.length+'</div><div class="ku">items</div></div></div>'
+    + '<div class="kpi-card kpi2"><div class="kl">Suppliers used</div><div><div class="kv">'+suppliers.length+'</div><div class="ku">suppliers</div></div></div>'
+    + '</div>';
+
+  // Search
+  html += '<input class="is" id="src-hist-search" placeholder="Search by ingredient, supplier, province..." oninput="filterSourcingHist(this.value)" style="width:100%;margin-bottom:12px"/>';
+
+  html += '<div id="src-hist-list">';
+  if(!LOGS.sourcing.length){
+    html += '<div style="text-align:center;padding:40px;color:var(--hint)">No sourcing records yet.</div>';
+  } else {
+    Object.entries(byDate).forEach(([date, records])=>{
+      html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 0 5px">'+date+'</div>';
+      records.forEach((r,i)=>{
+        const idx = LOGS.sourcing.indexOf(r);
+        html += '<div class="ec" style="margin-bottom:7px">'
+          + '<div class="et"><span class="etitle">'+esc(r.ingredient||'—')+'</span>'
+          + '<span class="edate">'+r.date+'</span></div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;align-items:center">'
+          + (r.supplier?'<span class="pill gn">'+esc(r.supplier)+'</span>':'')
+          + (r.province?'<span class="pill bl">'+esc(r.province)+'</span>':'')
+          + (r.srctype?'<span class="pill" style="background:var(--gray);color:var(--muted)">'+esc(r.srctype)+'</span>':'')
+          + (r.course?'<span class="pill am" style="background:#FEF3C7;color:#451A03">'+esc(r.course)+'</span>':'')
+          + '</div>'
+          + (r.note?'<div style="font-size:11px;color:var(--muted);margin-top:3px;font-style:italic">'+esc(r.note)+'</div>':'')
+          + '<button class="edel" data-si="'+idx+'" onclick="srcDel(this)">×</button>'
+          + '</div>';
+      });
+    });
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function filterSourcingHist(q){
+  const el = document.getElementById('src-hist-list');
+  if(!el) return;
+  const filtered = q ? LOGS.sourcing.filter(r=>
+    (r.ingredient||'').toLowerCase().includes(q.toLowerCase()) ||
+    (r.supplier||'').toLowerCase().includes(q.toLowerCase()) ||
+    (r.province||'').toLowerCase().includes(q.toLowerCase())
+  ) : LOGS.sourcing;
+  el.innerHTML = filtered.length===0
+    ? '<div style="text-align:center;padding:20px;color:var(--hint)">No results.</div>'
+    : filtered.slice().reverse().map((r)=>{
+        const idx = LOGS.sourcing.indexOf(r);
+        return '<div class="ec" style="margin-bottom:7px">'
+          + '<div class="et"><span class="etitle">'+esc(r.ingredient||'—')+'</span><span class="edate">'+r.date+'</span></div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">'
+          + (r.supplier?'<span class="pill gn">'+esc(r.supplier)+'</span>':'')
+          + (r.province?'<span class="pill bl">'+esc(r.province)+'</span>':'')
+          + (r.course?'<span class="pill am" style="background:#FEF3C7;color:#451A03">'+esc(r.course)+'</span>':'')
+          + '</div>'
+          + (r.note?'<div style="font-size:11px;color:var(--muted);margin-top:3px;font-style:italic">'+esc(r.note)+'</div>':'')
+          + '<button class="edel" data-si="'+idx+'" onclick="srcDel(this)">×</button>'
+          + '</div>';
+      }).join('');
+}
+// ── INGREDIENT DB ─────────────────────────────────────────────────────────
+function renderIngDb(el){
+  const cats=[...new Set(DB.map(i=>i.c))].sort();
+  const canAdd=S.role==='fluke';
+  el.innerHTML=`
+    ${canAdd?`<div class="ibox gn">📌 Only Fluke (Sous Chef) can add new ingredients. Everyone can use them in recipes.</div>`:
+    `<div class="ibox bl">👁 Read-only view. Fluke / Pastry / Mixo can add ingredients.</div>`}
+    <input class="is" placeholder="Search ingredients..." oninput="filterDb(this.value)" style="width:100%"/>
+    ${canAdd?`<button class="sbtn gn" onclick="navigate('add-ing')" style="margin-bottom:12px">+ Add New Ingredient</button>`:''}
+    <div class="mcard" id="db-list">
+      ${cats.map(cat=>{
+        const items=DB.filter(i=>i.c===cat);
+        return`<div class="db-cat">${cat} (${items.length})</div>`+
+          items.map((i,_idx)=>{const globalIdx=DB.indexOf(i);return`<div class="db-ing"><div><div class="din">${esc(i.n)}${i.isNew?'<span class="db-new" style="margin-left:5px">NEW</span>':''}</div><div class="dsp">${esc(i.s||'')} · ${esc(i.sp||'')}</div></div>${S.role==='fluke'?`<button class="edel" style="position:static;margin-left:8px" onclick="deleteIngredient(${globalIdx})">×</button>`:''}</div>`}).join('');
+      }).join('')}
+    </div>`;
+}
+function filterDb(q){
+  const el=document.getElementById('db-list');if(!el)return;
+  const cats=[...new Set(DB.map(i=>i.c))].sort();
+  el.innerHTML=cats.map(cat=>{
+    const items=DB.filter(i=>i.c===cat&&(!q||i.n.toLowerCase().includes(q.toLowerCase())));
+    if(!items.length)return'';
+    return`<div class="db-cat">${cat} (${items.length})</div>`+
+      items.map((i,_idx)=>{const globalIdx=DB.indexOf(i);return`<div class="db-ing"><div><div class="din">${esc(i.n)}${i.isNew?'<span class="db-new" style="margin-left:5px">NEW</span>':''}</div><div class="dsp">${esc(i.s||'')} · ${esc(i.sp||'')}</div></div>${S.role==='fluke'?`<button class="edel" style="position:static;margin-left:8px" onclick="deleteIngredient(${globalIdx})">×</button>`:''}</div>`}).join('');
+  }).join('');
+}
+function renderAddIng(el){
+  el.innerHTML=`
+    <div class="ibox gn">📌 New ingredients will be instantly available to everyone in the recipe builder.</div>
+    <div class="fs">
+      <div class="fst">Ingredient Details</div>
+      <div class="fi"><label>Name (EN)</label><input id="ai-name" placeholder="Ingredient name..."/></div>
+      <div class="fi"><label>Category</label><select id="ai-cat">
+        <option>Fruit</option><option>Vegetable</option><option>Herb/Spice</option>
+        <option>Seafood</option><option>Meat</option><option>Dairy Product</option>
+        <option>Flower/Edible Flower</option><option>Seasoning</option>
+        <option>Beverage Base</option><option>Nuts/Seeds</option><option>Other</option>
+      </select></div>
+      <div class="fi"><label>Source Province</label><select id="ai-src" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;-webkit-appearance:none;cursor:pointer;color:var(--offblack)"><option value="">— select —</option>
+            <option>Bangkok</option><option>Amnat Charoen</option><option>Ang Thong</option><option>Bueng Kan</option><option>Buri Ram</option><option>Chachoengsao</option><option>Chai Nat</option><option>Chaiyaphum</option><option>Chanthaburi</option><option>Chiang Mai</option><option>Chiang Rai</option><option>Chon Buri</option><option>Chumphon</option><option>Kalasin</option><option>Kamphaeng Phet</option><option>Kanchanaburi</option><option>Khon Kaen</option><option>Krabi</option><option>Lampang</option><option>Lamphun</option><option>Loei</option><option>Lop Buri</option><option>Mae Hong Son</option><option>Maha Sarakham</option><option>Mukdahan</option><option>Nakhon Nayok</option><option>Nakhon Pathom</option><option>Nakhon Phanom</option><option>Nakhon Ratchasima</option><option>Nakhon Sawan</option><option>Nakhon Si Thammarat</option><option>Nan</option><option>Narathiwat</option><option>Nong Bua Lam Phu</option><option>Nong Khai</option><option>Nonthaburi</option><option>Pathum Thani</option><option>Pattani</option><option>Phang Nga</option><option>Phatthalung</option><option>Phayao</option><option>Phetchabun</option><option>Phetchaburi</option><option>Phichit</option><option>Phitsanulok</option><option>Phra Nakhon Si Ayutthaya</option><option>Phrae</option><option>Phuket</option><option>Prachin Buri</option><option>Prachuap Khiri Khan</option><option>Ranong</option><option>Ratchaburi</option><option>Rayong</option><option>Roi Et</option><option>Sa Kaeo</option><option>Sakon Nakhon</option><option>Samut Prakan</option><option>Samut Sakhon</option><option>Samut Songkhram</option><option>Saraburi</option><option>Satun</option><option>Sing Buri</option><option>Si Sa Ket</option><option>Songkhla</option><option>Sukhothai</option><option>Suphan Buri</option><option>Surat Thani</option><option>Surin</option><option>Tak</option><option>Trang</option><option>Trat</option><option>Ubon Ratchathani</option><option>Udon Thani</option><option>Uthai Thani</option><option>Uttaradit</option><option>Yala</option><option>Yasothon</option></select></div>
+      <div class="fi"><label>Supplier</label><input id="ai-sup" placeholder="e.g. Go Organic, Our Garden..."/></div>
+      <div class="fi"><label>Note</label><input id="ai-note" placeholder="Any notes..."/></div>
+    </div>
+    <button class="sbtn gn" onclick="saveNewIng()">Add to Ingredient Database</button>`;
+}
+
+function deleteIngredient(idx){
+  if(idx<0||idx>=DB.length)return;
+  const name=DB[idx].n;
+  showModal('🗑','Delete ingredient?','"'+name+'" will be removed from the database.','Delete','#7F1D1D',()=>{
+    DB.splice(idx,1);
+    navigate('ing-db');
+    toast('✓ "'+name+'" removed');
+  });
+}
+function saveNewIng(){
+  const name=document.getElementById('ai-name')?.value.trim();
+  if(!name){toast('⚠ Enter ingredient name');return;}
+  if(DB.find(i=>i.n.toLowerCase()===name.toLowerCase())){toast('⚠ Already in database');return;}
+  DB.push({n:name,c:document.getElementById('ai-cat')?.value||'Other',
+    s:document.getElementById('ai-src')?.value||'',
+    sp:document.getElementById('ai-sup')?.value||'',isNew:true});
+  toast(`✓ "${name}" added to database · Now available in all recipes`);
+  setTimeout(()=>navigate('ing-db'),1900);
+}
+
+// ── DEVELOP (Pastry + Mixo + Recipe for Fluke/Yok) ─────────────────────────
+function renderDevelop(el){
+  const isPastry=S.role==='pastry',isMixo=S.role==='mixo',isPeter=S.role==='peter';
+  const accentClr=isMixo?'cy':isPastry?'pk':isPeter?'gn':'gn';
+  const typeOpts=isMixo
+    ? '<option>Cocktail</option><option>Mocktail</option><option>Infusion</option><option>Shrub/Syrup</option><option>Fermented Beverage</option><option>Tea Blend</option><option>Other</option>'
+    : isPastry
+    ? '<option>Dessert</option><option>Petit Four</option><option>Bread/Pastry</option><option>Ice Cream/Sorbet</option><option>Chocolate</option><option>Pre-dessert</option><option>Other</option>'
+    : isPeter
+    ? '<option>Amuse Bouche</option><option>Starter</option><option>Main Course</option><option>Side</option><option>Sauce/Condiment</option><option>Preserved Item</option><option>Fermented</option><option>Cured/Pickled</option><option>Experimental</option><option>Other</option>'
+    : '<option>Amuse Bouche</option><option>Starter</option><option>Main Course</option><option>Side</option><option>Sauce</option><option>Preserved Item</option><option>Other</option>';
+  // technique now uses multi-picker
+  const starsHtml=[1,2,3,4,5].map(n=>`<span class="star${S.stars>=n?' act':''}" onclick="setStar(${n})">★</span>`).join('');
+  el.innerHTML=`
+    <div class="ibox ${accentClr}">📌 Select ingredients from GOAT's ingredient database · Add step-by-step method · Rate & set status</div>
+    <div class="fs">
+      <div class="fst">Recipe Info</div>
+      <div class="fi"><label>Date</label><div class="av gn">${today()}</div></div>
+      <div class="fi"><label>Dish / Drink name</label><input id="dev-dish" placeholder="Name of the creation..."/></div>
+      <div class="fi"><label>Type</label><select id="dev-type">${typeOpts}</select></div>
+      <div class="fi" style="align-items:flex-start;padding:12px 16px"><label style="padding-top:2px">Technique</label>
+        <div id="tech-picker" style="flex:1;display:flex;flex-wrap:wrap;gap:6px">${renderTechPicker()}</div>
+      </div>
+      <div class="fi"><label>Serves</label><input id="dev-serves" type="number" placeholder="e.g. 4" min="1"/></div>
+    </div>
+    <div class="fs">
+      <div class="fst">Ingredients (วัตถุดิบในสูตร)</div>
+      <div style="padding:10px 13px 6px">
+        <div class="ing-search-wrap">
+          <input class="is" id="ing-search" placeholder="Search to add ingredient..." oninput="showIngDropdown(this.value)" autocomplete="off" style="margin-bottom:0"/>
+          <div class="ing-dropdown hidden" id="ing-dropdown"></div>
+        </div>
+        <table class="ing-table" id="ing-table-body">
+          <thead><tr>
+            <th style="width:35%">Ingredient</th>
+            <th style="width:30%">Spec</th>
+            <th style="width:16%">Quantity</th>
+            <th style="width:13%">Unit</th>
+            <th style="width:6%"></th>
+          </tr></thead>
+          <tbody id="ing-tbody"></tbody>
+        </table>
+        <button class="add-ing-row" onclick="addIngRow()">+ Add row manually</button>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="fst">Recipe Method</div>
+      <div class="fi" style="align-items:flex-start">
+        <label style="padding-top:4px">Method</label>
+        <textarea id="dev-method" style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;resize:none;height:140px;color:var(--offblack);padding-top:2px" placeholder="Describe the full method here — no need for numbered steps..."></textarea>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="fst">Notes & Rating</div>
+      <div class="fi"><label>Chef's Notes</label><textarea id="dev-notes" placeholder="Tasting notes, ideas, variations..."></textarea></div>
+      <div class="fi"><label>Waste Used?</label><input id="dev-waste" placeholder="e.g. citrus peel trim, spent coffee..."/></div>
+      <div class="fi"><label>Rating</label><div class="spick">${starsHtml}</div></div>
+      <div class="fi"><label>Status</label>
+        <select id="dev-status">
+          <option>Draft</option><option>Testing</option><option>Approved ✓</option>
+          <option>On Menu</option><option>Hold</option><option>Rejected</option>
+        </select>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="fst">Photo</div>
+      <div class="pf" id="pf-transport">
+        <div class="photo-zone" id="pz-transport">
+          <div class="photo-thumbs" id="pt-transport">
+            <label class="photo-add-btn">
+              <input type="file" accept="image/*" multiple onchange="addPhotos(\'transport\',this)" style="display:none"/>
+              <span style="font-size:22px">📷</span>
+              <span>Add photo</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="sbtn ${accentClr}" onclick="saveDevelop()">Save Recipe</button>`;
+}
+
+// ── TECHNIQUE MULTI-PICKER ───────────────────────────────────────────────
+let SEL_TECHS = [];
+const TECHS_KITCHEN = ['Raw/Fresh','Seared','Grilled/Charred','Steamed','Braised','Fermented','Pickled/Cured','Dried/Dehydrated','Smoked','Roasted','Poached','Confit','Sous vide','Sauce/Reduction','Powdered','Compressed','Spherification','Gel/Agar','Other'];
+
+const TECHS_PASTRY = ['Baked','Chilled/Set','Frozen','Poached','Steamed','Deep-fried','Pan-fried','Caramelised','Tempered Chocolate','Aerated/Whipped','Laminated','Blind-baked','Dehydrated','Candied','Glazed','Mousse','Gel/Jelly','Ice Cream/Sorbet','Fermented','Compressed','Other'];
+const TECHS_MIXO = ['Shaken','Stirred','Built','Blended','Infusion','Cold Brew','Fermentation','Fat Washing','Clarification','Distillation','Other'];
+function renderTechPicker(){
+  const isMixo = S.role==='mixo';
+  const isPastry = S.role==='pastry';
+  const opts = isMixo ? TECHS_MIXO : isPastry ? TECHS_PASTRY : TECHS_KITCHEN;
+  return opts.map(t=>`<span class="tag${SEL_TECHS.includes(t)?' act':''}" onclick="toggleTech('${t}')" style="font-size:11px;padding:4px 10px">${t}</span>`).join('');
+}
+function toggleTech(t){
+  const idx=SEL_TECHS.indexOf(t);
+  if(idx>=0) SEL_TECHS.splice(idx,1);
+  else SEL_TECHS.push(t);
+  const el=document.getElementById('tech-picker');
+  if(el) el.innerHTML=renderTechPicker();
+}
+
+// ── WASTE VIEW (Peter read-only) ─────────────────────────────────────────
+function renderWasteView(el){
+  const wt=LOGS.waste.reduce((s,r)=>s+(+r.weight||0),0);
+  const org=LOGS.waste.filter(r=>r.category==='Organic waste').reduce((s,r)=>s+(+r.weight||0),0);
+  el.innerHTML=`
+    <div class="page-header"><h2>Waste Log</h2><p>Yok's waste records — read only</p></div>
+    <div class="ibox bl">👁 Read-only view. Log entries are from Yok & Kitchen Staff.</div>
+    <div class="kpi-grid">
+      <div class="kpi-card kpi1"><div class="kl">Total waste</div><div><div class="kv">${wt.toFixed(1)}</div><div class="ku">kg</div></div></div>
+      <div class="kpi-card kpi2"><div class="kl">Organic waste</div><div><div class="kv">${org.toFixed(1)}</div><div class="ku">kg</div></div></div>
+    </div>
+    ${LOGS.waste.length===0
+      ? '<div style="text-align:center;padding:40px;color:var(--hint)">No waste logged yet.<br>Yok logs waste in the Waste tab.</div>'
+      : LOGS.waste.slice().reverse().map(r=>`
+        <div class="ec">
+          <div class="et"><span class="etitle">${esc(r.wasteType||'—')}</span><span class="edate">${r.date}</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <span class="esub">${r.weight} kg</span>
+            <span class="pill ${r.category==='Organic waste'?'gn':r.category==='Recyclable'?'bl':'or'}">${esc(r.category||'')}</span>
+          </div>
+        </div>`).join('')
+    }
+  `;
+}
+
+// ── INGREDIENT TABLE ────────────────────────────────────────────────────
+let ING_ROWS = [];
+
+function showIngDropdown(q){
+  const dd=document.getElementById('ing-dropdown');
+  if(!dd)return;
+  if(!q||q.length<1){dd.classList.add('hidden');return;}
+  const results=DB.filter(i=>i.n.toLowerCase().includes(q.toLowerCase())).slice(0,25);
+  if(!results.length){dd.classList.add('hidden');return;}
+  dd.innerHTML='';
+  results.forEach((i,idx)=>{
+    const div=document.createElement('div');
+    div.className='io';
+    div.innerHTML='<span style="font-weight:500">'+esc(i.n)+'</span><span style="font-size:11px;color:var(--muted)">'+esc(i.c)+'</span>';
+    div.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      selectIngFromDrop(i.n,i.c);
+    });
+    dd.appendChild(div);
+  });
+  dd.classList.remove('hidden');
+}
+function selectIngFromDrop(name,cat){
+  ING_ROWS.push({name:name,spec:'',qty:'',unit:'g'});
+  const dd=document.getElementById('ing-dropdown');
+  if(dd)dd.classList.add('hidden');
+  const s=document.getElementById('ing-search');
+  if(s)s.value='';
+  refreshIngTable();
+}
+function addIngRow(){
+  ING_ROWS.push({name:'',spec:'',qty:'',unit:'g'});
+  refreshIngTable();
+}
+function removeIngRow(i){
+  ING_ROWS.splice(i,1);
+  refreshIngTable();
+}
+function refreshIngTable(){
+  const tbody=document.getElementById('ing-tbody');
+  if(!tbody)return;
+  const units=['g','kg','ml','L','tsp','tbsp','pcs','bunch','pinch','to taste'];
+  tbody.innerHTML=ING_ROWS.map((r,i)=>
+    '<tr>'
+    +'<td><input value="'+esc(r.name)+'" placeholder="Ingredient" oninput="ING_ROWS['+i+'].name=this.value"/></td>'
+    +'<td><input value="'+esc(r.spec)+'" placeholder="e.g. local / 30% fat" oninput="ING_ROWS['+i+'].spec=this.value"/></td>'
+    +'<td><input value="'+esc(r.qty)+'" placeholder="0" type="number" min="0" step="any" oninput="ING_ROWS['+i+'].qty=this.value" style="width:54px"/></td>'
+    +'<td><select onchange="ING_ROWS['+i+'].unit=this.value">'
+    +units.map(u=>'<option'+(r.unit===u?' selected':'')+'>'+u+'</option>').join('')
+    +'</select></td>'
+    +'<td><button class="del-ing-row" onclick="removeIngRow('+i+')">×</button></td>'
+    +'</tr>'
+  ).join('');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.ing-search-wrap')){
+    const dd=document.getElementById('ing-dropdown');
+    if(dd)dd.classList.add('hidden');
+  }
+});
+function renderSteps(){
+  return S.steps.map((s,i)=>`
+    <div class="stitem">
+      <div class="stnum">${i+1}</div>
+      <input class="stin" placeholder="Step ${i+1}..." value="${esc(s)}" oninput="S.steps[${i}]=this.value"/>
+      <button class="stdel" onclick="delStep(${i})">×</button>
+    </div>`).join('');
+}
+function addStep(){S.steps.push('');const el=document.getElementById('steps-list');if(el)el.innerHTML=renderSteps();}
+function delStep(i){if(S.steps.length>1)S.steps.splice(i,1);const el=document.getElementById('steps-list');if(el)el.innerHTML=renderSteps();}
+function setStar(n){S.stars=n;document.querySelectorAll('.spick .star').forEach((s,i)=>s.classList.toggle('act',i<n));}
+function saveDevelop(){
+  const dish=document.getElementById('dev-dish')?.value.trim();
+  if(!dish){toast('⚠ Enter dish/drink name');return;}
+  const recEntry={
+    ts:Date.now(),id:uid(),date:today(),role:S.role,
+    name:dish,type:document.getElementById('dev-type')?.value,
+    tech:SEL_TECHS.join(', '),
+    serves:document.getElementById('dev-serves')?.value,
+    ingredients:[...ING_ROWS],
+    method:document.getElementById('dev-method')?.value||'',
+    notes:document.getElementById('dev-notes')?.value,
+    wasteUsed:document.getElementById('dev-waste')?.value,
+    stars:S.stars,
+    status:document.getElementById('dev-status')?.value,
+  };
+  RECIPES.push(recEntry);
+  sheetSave('8_Recipes',[recEntry.id,recEntry.date,recEntry.role,recEntry.name,recEntry.type,recEntry.tech,recEntry.serves,recEntry.ingredients.map(i=>i.name||i).join(', '),recEntry.method,recEntry.notes,recEntry.wasteUsed,recEntry.stars,recEntry.status,S.role]);
+  S.selIngs=[];S.steps=[''];S.stars=0;
+  toastSave(`Recipe: ${dish}`);
+}
+
+// ── INGREDIENT USAGE (Fluke — S3) ────────────────────────────────────────
+function renderUsage(el){
+  const ingNames=DB.map(i=>i.n);
+  el.innerHTML=`
+    <div class="ibox gn">📌 Log how each ingredient is used in a dish — technique, part used, weight, and leftover. %Waste calculates automatically.</div>
+    <div class="fs">
+      <div class="fst">Ingredient & Dish</div>
+      <div class="fi"><label>Date</label><div class="av gn">${today()}</div></div>
+      <div class="fi"><label>Ingredient</label>
+        <select id="u-ing"><option value="">— select —</option>${ingNames.map(n=>`<option>${n}</option>`).join('')}</select>
+      </div>
+      <div class="fi"><label>Category</label>
+        <select id="u-cat"><option>Seafood</option><option>Meat</option><option>Vegetable</option><option>Fruit</option><option>Herb/Spice</option><option>Flower/Edible Flower</option><option>Dairy Product</option><option>Seasoning</option><option>Beverage Base</option></select>
+      </div>
+      <div class="fi"><label>Dish / Course</label><input id="u-dish" placeholder="e.g. Koh Sichang course / Amuse bouche..."/></div>
+      <div class="fi"><label>Technique</label>
+        <select id="u-tech"><option>Raw/Fresh</option><option>Seared</option><option>Grilled/Charred</option><option>Steamed</option><option>Braised/Slow-cooked</option><option>Fermented</option><option>Pickled/Cured</option><option>Dried/Dehydrated</option><option>Smoked</option><option>Roasted</option><option>Poached</option><option>Confit</option><option>Sous vide</option><option>Sauce/Reduction</option><option>Stock base</option><option>Garnish</option><option>Powdered</option><option>Other</option></select>
+      </div>
+      <div class="fi"><label>Part used</label>
+        <select id="u-part"><option>Whole</option><option>Flesh only</option><option>Skin</option><option>Leaves</option><option>Flower</option><option>Root</option><option>Seed/Stone</option><option>Juice/Liquid</option><option>Shell/Husk</option><option>Trimmings</option><option>Fat/Offal</option><option>Bone (stock)</option><option>Peel</option></select>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="fst">Weight & Waste Tracking</div>
+      <div class="fi"><label>Total (g.)</label><input id="u-total" type="number" placeholder="Total weight received" step="1" oninput="calcUsageWaste()"/></div>
+      <div class="fi"><label>Used (g.)</label><input id="u-used" type="number" placeholder="Actually used in dish" step="1" oninput="calcUsageWaste()"/></div>
+      <div class="fi"><label>Leftover (g.)</label><input id="u-left" type="number" placeholder="Reused / repurposed" step="1" oninput="calcUsageWaste()"/></div>
+      <div class="fi" style="background:#FEF2F2"><label style="color:var(--rd-d);font-weight:600">Waste (g.)</label><div class="av rd" id="u-waste-g">— auto</div></div>
+      <div class="fi" style="background:#F0FDF4"><label style="color:var(--gr-d);font-weight:600">% Waste</label><div class="av gn" id="u-waste-pct">— auto</div></div>
+      <div class="fi"><label>Reuse method</label>
+        <select id="u-reuse"><option>Compost</option><option>Fermentation</option><option>Pickling/Cure</option><option>Dehydrate/Dry</option><option>Stock/Broth</option><option>Feed back to supplier</option><option>N/A — fully used</option></select>
+      </div>
+    </div>
+    <div class="fs"><div class="fst">Notes</div>
+      <div class="fi"><label>Note</label><input id="u-note" placeholder="Any notes..."/></div>
+    </div>
+    <div class="stl">Usage Log (${(LOGS.usage||[]).length} entries)</div>
+    <div id="u-log">${usageLog()}</div>
+    <button class="sbtn gn" onclick="saveUsage()">Save Usage Record</button>`;
+}
+function calcUsageWaste(){
+  const total=parseFloat(document.getElementById('u-total')?.value)||0;
+  const used=parseFloat(document.getElementById('u-used')?.value)||0;
+  const left=parseFloat(document.getElementById('u-left')?.value)||0;
+  const waste=Math.max(0,total-used-left);
+  const pct=total>0?(waste/total*100):0;
+  const wg=document.getElementById('u-waste-g');
+  const wp=document.getElementById('u-waste-pct');
+  if(wg)wg.textContent=total>0?`${waste.toFixed(0)} g.`:'—';
+  if(wp)wp.textContent=total>0?`${pct.toFixed(1)}%`:'—';
+}
+function usageLog(){
+  if(!LOGS.usage?.length)return`<div style="padding:12px 0;color:var(--hint);font-size:12px">No usage logs yet.</div>`;
+  // Group by ingredient
+  const grouped={};
+  LOGS.usage.forEach((r,idx)=>{
+    const key=r.ingredient||'—';
+    if(!grouped[key]) grouped[key]={entries:[],totalG:0,usedG:0,wasteG:0};
+    grouped[key].entries.push({...r,_idx:idx});
+    grouped[key].totalG+=(r.total||0);
+    grouped[key].usedG+=(r.used||0);
+    grouped[key].wasteG+=(r.wasteG||0);
+  });
+  return Object.entries(grouped).map(([ing,g])=>{
+    const wastePct=g.totalG>0?((g.wasteG/g.totalG)*100).toFixed(1):0;
+    const wasteClass=wastePct>30?'rd':wastePct>10?'or':'gn';
+    return `<div class="ec" style="margin-bottom:8px">
+      <div class="et">
+        <span class="etitle" style="font-size:14px;font-weight:600">${esc(ing)}</span>
+        <span class="pill ${wasteClass}">${wastePct}% waste</span>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:6px;padding-top:6px;border-top:1px solid var(--gray2)">
+        <div><div style="font-size:10px;color:var(--hint)">Total</div><div style="font-size:13px;font-weight:600">${g.totalG}g</div></div>
+        <div><div style="font-size:10px;color:var(--hint)">Used</div><div style="font-size:13px;font-weight:600;color:#16A34A">${g.usedG}g</div></div>
+        <div><div style="font-size:10px;color:var(--hint)">Waste</div><div style="font-size:13px;font-weight:600;color:#EF4444">${g.wasteG}g</div></div>
+        <div><div style="font-size:10px;color:var(--hint)">Dishes</div><div style="font-size:13px;font-weight:600">${g.entries.length}</div></div>
+      </div>
+      <div style="margin-top:7px">
+        ${g.entries.map(e=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:3px 0;border-bottom:0.5px solid var(--gray2)">
+          <span>📋 ${esc(e.dish||'—')} · ${esc(e.tech||'')} · Part: ${esc(e.partUsed||'—')}</span>
+          <span>${e.used||0}g used</span>
+        </div>`).join('')}
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button onclick="usageAddMore('${esc(ing)}')" style="flex:1;padding:7px;border:1.5px solid #16A34A;border-radius:var(--rs);background:var(--white);color:#14532D;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">+ Log another dish with this</button>
+        <button onclick="delLog('usage',${LOGS.usage.indexOf(g.entries[0])},null);navigate('usage')" style="padding:7px 12px;border:1.5px solid var(--gray2);border-radius:var(--rs);background:var(--white);color:var(--muted);font-size:12px;cursor:pointer;font-family:var(--font-body)">Delete all</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function usageAddMore(ingName){
+  // Pre-select ingredient and scroll to form
+  const sel=document.getElementById('u-ing');
+  if(sel) sel.value=ingName;
+  const dish=document.getElementById('u-dish');
+  if(dish) dish.focus();
+  // Flash the form
+  const fs=document.querySelector('.fs');
+  if(fs){fs.style.border='2px solid #16A34A';setTimeout(()=>{fs.style.border='1px solid var(--gray2)';},1500);}
+  // Scroll to top
+  document.getElementById('mc')?.scrollTo({top:0,behavior:'smooth'});
+  toast('✓ Ingredient pre-selected — fill in the new dish details');
+}
+// ── MULTI-PHOTO COMPONENT ────────────────────────────────────────────────
+let PHOTO_STORE = {}; // {formKey: [{name,dataUrl}]}
+function initPhotos(key){
+  if(!PHOTO_STORE[key])PHOTO_STORE[key]=[];
+}
+function renderPhotoZone(key){
+  initPhotos(key);
+  const photos=PHOTO_STORE[key];
+  return `<div class="photo-zone" id="pz-${key}">
+    <div class="photo-thumbs" id="pt-${key}">
+      ${photos.map((p,i)=>`
+        <div class="photo-thumb">
+          <img src="${p.dataUrl}" alt="${p.name}"/>
+          <button class="photo-del" onclick="removePhoto('${key}',${i})">×</button>
+        </div>`).join('')}
+      <label class="photo-add-btn">
+        <input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)" style="display:none"/>
+        <span style="font-size:22px">📷</span>
+        <span>Add photo</span>
+      </label>
+    </div>
+  </div>`;
+}
+function addPhotos(key,input){
+  const files=Array.from(input.files);
+  input.value=''; // reset input here, before async
+  initPhotos(key);
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=async e=>{
+      const dataUrl=e.target.result;
+      const photoObj={name:f.name,dataUrl:dataUrl,uploading:true,driveUrl:null};
+      PHOTO_STORE[key].push(photoObj);
+      renderPhotoThumbs(key);
+      // Upload to Google Drive
+      try {
+        const driveUrl = await uploadPhotoToDrive(dataUrl, `${key}_${Date.now()}_${f.name}`);
+        photoObj.driveUrl = driveUrl;
+        photoObj.uploading = false;
+        if(driveUrl) photoObj.dataUrl = driveUrl;
+      } catch(err) {
+        photoObj.uploading = false;
+      }
+      renderPhotoThumbs(key);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderPhotoThumbs(key){
+  const thumbsEl=document.getElementById(`pt-${key}`);
+  if(!thumbsEl) return;
+  const photos=PHOTO_STORE[key]||[];
+  thumbsEl.innerHTML=photos.map((p,i)=>`
+    <div class="photo-thumb" style="position:relative">
+      ${p.uploading
+        ? `<div style="width:70px;height:70px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">⏳</div>`
+        : `<img src="${p.driveUrl||p.dataUrl}" alt="${p.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px"/>`
+      }
+      <button class="photo-del" onclick="removePhoto('${key}',${i})">×</button>
+    </div>`).join('')+`
+    <label class="photo-add-btn">
+      <input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)" style="display:none"/>
+      <span style="font-size:22px">📷</span>
+      <span>Add photo</span>
+    </label>`;
+}
+function removePhoto(key,idx){
+  if(PHOTO_STORE[key])PHOTO_STORE[key].splice(idx,1);
+  const thumbsEl=document.getElementById(`pt-${key}`);
+  if(thumbsEl){
+    const photos=PHOTO_STORE[key];
+    thumbsEl.innerHTML=photos.map((p,i)=>`
+      <div class="photo-thumb">
+        <img src="${p.dataUrl}" alt="${p.name}"/>
+        <button class="photo-del" onclick="removePhoto('${key}',${i})">×</button>
+      </div>`).join('')+`
+      <label class="photo-add-btn">
+        <input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)" style="display:none"/>
+        <span style="font-size:22px">📷</span>
+        <span>Add photo</span>
+      </label>`;
+  }
+}
+
+function saveUsage(){
+  const ing=document.getElementById('u-ing')?.value;
+  if(!ing){toast('⚠ Select an ingredient');return;}
+  const total=parseFloat(document.getElementById('u-total')?.value)||0;
+  const used=parseFloat(document.getElementById('u-used')?.value)||0;
+  const left=parseFloat(document.getElementById('u-left')?.value)||0;
+  const waste=Math.max(0,total-used-left);
+  const pct=total>0?+(waste/total*100).toFixed(1):0;
+  if(!LOGS.usage)LOGS.usage=[];
+  const uEntry={ts:Date.now(),date:today(),ingredient:ing,
+    category:document.getElementById('u-cat')?.value,
+    dish:document.getElementById('u-dish')?.value,
+    tech:document.getElementById('u-tech')?.value,
+    partUsed:document.getElementById('u-part')?.value,
+    total,used,leftover:left,wasteG:waste,wastePct:pct,
+    reuse:document.getElementById('u-reuse')?.value,
+    note:document.getElementById('u-note')?.value};
+  LOGS.usage.push(uEntry);
+  sheetSave('5_Usage',[uEntry.date,uEntry.ingredient,uEntry.category,uEntry.dish,uEntry.tech,uEntry.partUsed,uEntry.total,uEntry.used,uEntry.leftover,uEntry.wasteG,uEntry.wastePct,uEntry.reuse,uEntry.note,S.role]);
+  toast(`✓ Usage logged · ${pct}% waste`);
+  setTimeout(()=>navigate('usage'),1900);
+}
+
+// ── MY RECIPES (Fluke & Yok) ──────────────────────────────────────────────
+function renderMyRecipes(el){
+  const mine=RECIPES.filter(r=>r.role===S.role);
+  const isChef=['fluke','yok'].includes(S.role);
+  el.innerHTML=`
+    <div class="ibox gn">📌 Your personal recipe log. ${isChef?'You can also view all R&D recipes via "R&D View" tab.':''}</div>
+    <button class="sbtn gn" onclick="navigate('develop')" style="margin-bottom:12px">+ Create New Recipe</button>
+    ${mine.length===0?`<div style="text-align:center;padding:40px;color:var(--hint)">No recipes yet.<br>Tap "+ Create" to start.</div>`:
+    mine.map(r=>recipeCard(r)).join('')}`;
+}
+
+// ── R&D VIEW (Chefs + Pastry/Mixo) ────────────────────────────────────────
+function renderRdView(el){
+  const canSeeAll=['fluke','owner'].includes(S.role);
+  const shown=canSeeAll?RECIPES:RECIPES.filter(r=>r.role===S.role);
+  const roles=['fluke','yok','peter','pastry','mixo'];
+  el.innerHTML=`
+    <div class="ibox pu">${canSeeAll?'📌 Viewing all R&D recipes (Sous Chef & Owner access)':'📌 Showing your own recipes only. Sous Chef & Owner can view all R&D.'}</div>
+    ${canSeeAll?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+      <span class="tag act" onclick="filterRd(this,'')">All (${shown.length})</span>
+      ${roles.map(r=>{const cnt=shown.filter(x=>x.role===r).length;return cnt?`<span class="tag" onclick="filterRd(this,'${r}')">${ROLES[r]?.name||r} (${cnt})</span>`:''}).join('')}
+    </div>`:''}
+    <div id="rd-list">${shown.length?shown.map(r=>recipeCard(r,canSeeAll)).join(''):`<div style="text-align:center;padding:40px;color:var(--hint)">No recipes yet.</div>`}</div>`;
+}
+function filterRd(el,role){
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+  const shown=RECIPES.filter(r=>!role||r.role===role);
+  const rl=document.getElementById('rd-list');
+  if(rl)rl.innerHTML=shown.length?shown.map(r=>recipeCard(r,true)).join(''):`<div style="text-align:center;padding:40px;color:var(--hint)">No recipes.</div>`;
+}
+function recipeCard(r,showRole=false){
+  const roleMeta=ROLES[r.role];
+  const statusClr={Approved:'gn','On Menu':'bl',Draft:'',Testing:'am',Hold:'or',Rejected:'rd'}[r.status]||'';
+  return`<div class="recipe-view" id="rec-${r.id}">
+    <div class="rv-head">
+      <div>
+        <div class="rv-dish">${esc(r.name)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(r.type||'')} · ${esc(r.tech||'')}</div>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        ${statusClr?`<span class="pill ${statusClr}">${esc(r.status)}</span>`:''}
+        ${'★'.repeat(r.stars||0)}<span style="font-size:11px;color:var(--hint)">${'☆'.repeat(5-(r.stars||0))}</span>
+        <button class="sbtn rd" style="padding:5px 10px;font-size:11px;margin:0;width:auto;border-radius:20px" onclick="deleteRecipe('${r.id}')">Delete</button>
+      </div>
+    </div>
+    ${showRole&&roleMeta?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><span class="pill" style="background:${roleMeta.bg};color:${roleMeta.clr}">${roleMeta.name} · ${roleMeta.title}</span><span style="font-size:10px;color:var(--hint)">${r.date}</span></div>`:''}
+    ${r.ingredients?.length?`<div class="rv-sec">Ingredients</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <tr style="border-bottom:1px solid var(--gray2)">
+          <th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase">Ingredient</th>
+          <th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase">Spec</th>
+          <th style="text-align:right;padding:4px 6px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase">Qty</th>
+          <th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase">Unit</th>
+        </tr>
+        ${r.ingredients.map(i=>{
+          const ing = typeof i==='object'?i:{name:i,spec:'',qty:'',unit:''};
+          return `<tr style="border-bottom:1px solid var(--gray2)">
+            <td style="padding:7px 6px;font-weight:500">${esc(ing.name||ing)}</td>
+            <td style="padding:7px 6px;color:var(--muted)">${esc(ing.spec||'')}</td>
+            <td style="padding:7px 6px;text-align:right">${esc(String(ing.qty||''))}</td>
+            <td style="padding:7px 6px;color:var(--muted)">${esc(ing.unit||'')}</td>
+          </tr>`;
+        }).join('')}
+      </table>`:''}
+    ${(r.method||(r.steps&&r.steps.length))?`<div class="rv-sec">Method</div><div style="font-size:13px;color:var(--offblack);line-height:1.7;white-space:pre-wrap">${esc(r.method||(r.steps||[]).join('\n'))}</div>`:''}
+    ${r.notes?`<div class="rv-sec">Notes</div><div style="font-size:13px;color:var(--muted)">${esc(r.notes)}</div>`:''}
+    ${r.wasteUsed?`<div style="margin-top:7px"><span class="pill gn">♻ Waste used: ${esc(r.wasteUsed)}</span></div>`:''}
+    ${r.serves?`<div style="font-size:11px;color:var(--hint);margin-top:5px">Serves: ${esc(r.serves)}</div>`:''}
+  </div>`;
+}
+function deleteRecipe(id){
+  showModal('🗑','Delete Recipe?','This cannot be undone.','Delete','var(--rd-d)',()=>{
+    RECIPES=RECIPES.filter(r=>r.id!==id);
+    const el=document.getElementById(`rec-${id}`);
+    if(el)el.remove();
+    toast('✓ Recipe deleted');
+  });
+}
+
+// ── TRANSPORT ─────────────────────────────────────────────────────────────
+function renderTransport(el){
+  const supList=getSourcingSuppliers();
+  el.innerHTML=`
+    <div class="ibox or">📌 Log every delivery trip. Distance = Google Maps actual. CO₂e calculates automatically → feeds Carbon S7.</div>
+    <div class="fs">
+      <div class="fst">Trip Details</div>
+      <div class="fi"><label>Date</label><div class="av gn">${today()}</div></div>
+      <div class="fi"><label>Delivery Ref.</label><input id="tr-ref" placeholder="e.g. DEL-001"/></div>
+      <div class="fi"><label>Supplier</label><select id="tr-sup"><option value="">— select —</option>${supList.map(s=>`<option>${s}</option>`).join('')}</select></div>
+      <div class="fi"><label>Direction</label><select id="tr-dir"><option>Supplier → Restaurant (delivered)</option><option>Restaurant → Supplier (pickup)</option><option>Market pickup</option><option>Waste disposal trip</option></select></div>
+    </div>
+    <div class="fs">
+      <div class="fst">Vehicle & Distance</div>
+      <div class="fi"><label>Vehicle</label><select id="tr-veh" onchange="calcCO2()"><option>Pickup</option><option>Truck</option><option>Motorcycle</option><option>Van</option><option>EV</option></select></div>
+      <div class="fi"><label>Fuel</label><select id="tr-fuel" onchange="calcCO2()"><option>Diesel</option><option>Petrol</option><option>Electric</option></select></div>
+      <div class="fi"><label>Distance (km)</label><input id="tr-dist" type="number" placeholder="Google Maps distance" step="0.1" oninput="calcCO2()"/></div>
+      <div class="fi"><label>Trips</label><input id="tr-trips" type="number" value="1" min="1" oninput="calcCO2()"/></div>
+      <div class="fi"><label>Total km</label><div class="av or" id="tr-totalkm">—</div></div>
+      <div class="fi" style="background:var(--or-l)"><label style="color:var(--or-d);font-weight:600">CO₂e (kg)</label><div class="av or" id="tr-co2">— auto</div></div>
+    </div>
+    <div class="fs">
+      <div class="fst">Cargo & Note</div>
+      <div class="fi"><label>Cargo (kg)</label><input id="tr-cargo" type="number" placeholder="Cargo weight" step="0.1"/></div>
+      <div class="fi"><label>Note</label><input id="tr-note" placeholder="Any notes..."/></div>
+    </div>
+    <div class="stl">Transport Log (${LOGS.transport.length} trips)</div>
+    <div id="tr-log">${transportLog()}</div>
+    <button class="sbtn or" onclick="saveTransport()">Save Transport Trip</button>`;
+}
+function calcCO2(){
+  const d=parseFloat(document.getElementById('tr-dist')?.value)||0;
+  const t=parseFloat(document.getElementById('tr-trips')?.value)||1;
+  const v=document.getElementById('tr-veh')?.value||'Pickup';
+  const f=document.getElementById('tr-fuel')?.value||'Diesel';
+  const k=`${v}-${f}`;
+  const ef=TEF[k]||0.173;
+  const tot=d*t;const co2=tot*ef;
+  const tkm=document.getElementById('tr-totalkm');
+  const tco=document.getElementById('tr-co2');
+  if(tkm)tkm.textContent=tot>0?`${tot.toFixed(1)} km`:'—';
+  if(tco)tco.textContent=co2>0?`${co2.toFixed(3)} kg  (EF: ${ef} kg/km)`:'—';
+}
+function transportLog(){
+  if(!LOGS.transport.length)return`<div style="padding:12px 0;color:var(--hint);font-size:12px">No trips logged yet.</div>`;
+  return LOGS.transport.slice().reverse().slice(0,5).map((r,i)=>`
+    <div class="ec">
+      <div class="et"><span class="etitle">${esc(r.supplier||'Unknown')}</span><span class="edate">${r.date}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span class="esub">${r.vehicle} · ${r.totalKm} km · ${(r.co2e||0).toFixed(3)} kg CO₂e</span>
+        <span class="pill or">S2</span>
+      </div>
+      <button class="edel" onclick="delLog('transport',${LOGS.transport.length-1-i},this)">×</button>
+    </div>`).join('');
+}
+function saveTransport(){
+  const d=parseFloat(document.getElementById('tr-dist')?.value);
+  if(!d){toast('⚠ Enter distance');return;}
+  const v=document.getElementById('tr-veh')?.value||'Pickup';
+  const f=document.getElementById('tr-fuel')?.value||'Diesel';
+  const t=parseFloat(document.getElementById('tr-trips')?.value)||1;
+  const ef=TEF[`${v}-${f}`]||0.173;
+  const entry={ts:Date.now(),date:today(),
+    ref:document.getElementById('tr-ref')?.value,
+    supplier:document.getElementById('tr-sup')?.value,
+    direction:document.getElementById('tr-dir')?.value,
+    vehicle:v,fuel:f,distance:d,trips:t,
+    totalKm:+(d*t).toFixed(2),co2e:+(d*t*ef).toFixed(4),
+    cargo:document.getElementById('tr-cargo')?.value,
+    note:document.getElementById('tr-note')?.value};
+  LOGS.transport.push(entry);
+  sheetSave('2_Transport',[entry.date,entry.ref,entry.supplier,entry.direction,entry.vehicle,entry.fuel,entry.distance,entry.trips,entry.totalKm,ef,entry.co2e,entry.cargo,entry.note,S.role]);
+  toast(`✓ Transport logged · CO₂e: ${(d*t*ef).toFixed(3)} kg`);
+  setTimeout(()=>navigate('transport'),1900);
+}
+
+// ── WASTE ─────────────────────────────────────────────────────────────────
+// ── WASTE DISPOSAL ACTIONS ───────────────────────────────────────────────
+// action values: throw | donate | sell | compost | cook | other
+const WASTE_ACTIONS = [
+  {id:'throw',  label:'🗑 ทิ้ง',           en:'Dispose / Trash',      color:'rd'},
+  {id:'donate', label:'🎁 บริจาค',         en:'Donate',               color:'bl'},
+  {id:'sell',   label:'💰 ขาย',            en:'Sell',                 color:'am'},
+  {id:'compost',label:'🌱 Compost',         en:'Compost → link batch', color:'gn'},
+  {id:'cook',   label:'👨‍🍳 นำไปทำอาหาร', en:'Use in cooking',       color:'pu'},
+  {id:'other',  label:'📝 อื่น ๆ',         en:'Other',                color:''},
+];
+let S_WASTE_ACTION = 'throw';
+
+function renderWaste(el){
+  let html = '';
+  html += '<div class="ibox gn">📌 Log waste and choose what happens to it next — Compost links directly to a new batch.</div>';
+  html += '<div class="fs"><div class="fst">Waste Details</div>';
+  html += '<div class="fi"><label>Date</label><div class="av gn">'+today()+'</div></div>';
+  html += '<div class="fi"><label>Waste type</label><select id="w-type">'
+    + '<option>Food scraps from kitchen</option>'
+    + '<option>Post-service food waste</option>'
+    + '<option>Vegetable/Fruit trimmings</option>'
+    + '<option>Coffee grounds/Tea</option>'
+    + '<option>Fruit peel</option>'
+    + '<option>Clean plastic</option>'
+    + '<option>Soiled plastic</option>'
+    + '<option>Foam box / Polystyrene</option>'
+    + '<option>Paper/Cardboard</option>'
+    + '<option>Glass/Bottles</option>'
+    + '<option>Metal/Cans</option>'
+    + '<option>Used cooking oil</option>'
+    + '<option>General waste</option>'
+    + '</select></div>';
+  html += '<div class="fi"><label>Weight (kg)</label><input id="w-wt" type="number" placeholder="0.0" step="0.1"/></div>';
+  html += '<div class="fi"><label>Category</label><div class="tpick">'
+    + '<span class="tag act" onclick="pickWasteCatTag(this)" data-cat="Organic waste">Organic</span>'
+    + '<span class="tag" onclick="pickWasteCatTag(this)" data-cat="Recyclable">Recyclable</span>'
+    + '<span class="tag" onclick="pickWasteCatTag(this)" data-cat="General waste">General</span>'
+    + '<span class="tag" onclick="pickWasteCatTag(this)" data-cat="Hazardous">Hazardous</span>'
+    + '</div></div>';
+  html += '</div>';
+
+  // Disposal Action Picker
+  html += '<div class="fs"><div class="fst">จัดการของเสียนี้อย่างไร?</div>';
+  html += '<div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
+  WASTE_ACTIONS.forEach(a => {
+    const active = S_WASTE_ACTION === a.id;
+    const bdr = active ? '2px solid #0A0A0A' : '1.5px solid var(--gray2)';
+    const bg2 = active ? '#0A0A0A' : 'var(--white)';
+    const tc = active ? '#fff' : 'var(--text)';
+    const fw2 = active ? '600' : '500';
+    html += '<button data-waction="'+a.id+'" onclick="pickWasteAction(this)" style="padding:10px 6px;border-radius:var(--rs);border:'+bdr+';background:'+bg2+';color:'+tc+';cursor:pointer;font-size:11px;font-weight:'+fw2+';font-family:var(--font-body);text-align:center;line-height:1.4">'
+      + a.label + '</button>';
+  });
+  html += '</div>';
+
+  // Compost sub-form — show only if action = compost
+  if(S_WASTE_ACTION === 'compost'){
+    const activeBatches = (LOGS.compost||[]).filter(b=>b.status==='input');
+    html += '<div style="margin:0 14px 12px;padding:12px 14px;background:#F0FDF4;border-radius:var(--rs);border:1px solid #BBF7D0">';
+    html += '<div style="font-size:12px;font-weight:600;color:#14532D;margin-bottom:8px">🌱 Link to Compost Batch</div>';
+    if(activeBatches.length){
+      html += '<div style="font-size:12px;color:#166534;margin-bottom:8px">Add to existing batch:</div>';
+      activeBatches.forEach((b,i)=>{
+        html += '<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:13px">'
+          + '<input type="radio" name="comp-batch" value="'+b.batch+'" style="accent-color:#16A34A"/>'
+          + 'Batch '+esc(b.batch)+' — '+esc(b.material)+' ('+b.inputKg+' kg)'
+          + '</label>';
+      });
+    }
+    html += '<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:13px">'
+      + '<input type="radio" name="comp-batch" value="__new__" '+(activeBatches.length?'':'checked')+'  style="accent-color:#16A34A"/>'
+      + 'Create new compost batch</label>';
+    html += '</div>';
+  }
+
+  // Note field (always visible)
+  html += '<div class="fi" style="border-top:1px solid var(--gray2)"><label>หมายเหตุ</label><textarea id="w-note" placeholder="รายละเอียดเพิ่มเติม เช่น ส่งมูลนิธิ XYZ / ขายให้ร้าน A / นำไปทำเมนู B..." style="flex:1;border:none;background:transparent;font-size:13px;font-family:var(--font-body);outline:none;resize:none;height:60px;padding-top:4px"></textarea></div>';
+  html += '</div>';
+
+  // Photo
+  html += '<div class="fs"><div class="fst">Photo</div>'
+    + '<div class="pf"><div class="photo-zone"><div class="photo-thumbs" id="pt-waste">'
+    + '<label class="photo-add-btn"><input type="file" accept="image/*" multiple onchange="addPhotos(\"waste\",this)" style="display:none"/>'
+    + '<span style="font-size:22px">📷</span><span>Add photo</span></label>'
+    + '</div></div></div></div>';
+
+  // Log
+  html += '<div class="stl">Waste Log ('+LOGS.waste.length+' entries)</div>';
+  html += '<div id="w-log">'+wasteLog()+'</div>';
+  html += '<button class="sbtn te" onclick="saveWaste()">Save Waste Entry</button>';
+
+  el.innerHTML = html;
+}
+
+function pickWasteAction(btn){
+  const id = typeof btn === 'string' ? btn : btn.getAttribute('data-waction');
+  S_WASTE_ACTION = id;
+  renderWaste(document.getElementById('mc'));
+  // restore scroll position top
+}
+
+function wasteLog(){
+  if(!LOGS.waste.length)return'<div style="padding:12px 0;color:var(--hint);font-size:12px">No waste logged yet.</div>';
+  return LOGS.waste.slice().reverse().slice(0,8).map((r,i)=>{
+    const idx = LOGS.waste.length-1-i;
+    const actionLabel = WASTE_ACTIONS.find(a=>a.id===r.action)?.label || r.disposal || '—';
+    const pillColor = WASTE_ACTIONS.find(a=>a.id===r.action)?.color || 'te';
+    return `<div class="ec">
+      <div class="et"><span class="etitle">${esc(r.wasteType)}</span><span class="edate">${r.date}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap">
+        <span class="esub">${r.weight} kg</span>
+        <span class="pill ${pillColor}">${actionLabel}</span>
+        <span class="pill te">${esc(r.category)}</span>
+      </div>
+      ${r.note?`<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic">${esc(r.note)}</div>`:''}
+      ${r.action==='compost'&&r.compostBatch?`<div style="font-size:11px;color:#16A34A;margin-top:3px">🌱 Linked to Batch ${esc(r.compostBatch)}</div>`:''}
+      <button class="edel" onclick="delLog('waste',${idx},this)">×</button>
+    </div>`;
+  }).join('');
+}
+
+function wasteDel(btn){
+  const idx=parseInt(btn.getAttribute('data-di'));
+  delLog('waste',idx,btn);
+}
+function pickWasteCatTag(el){
+  const cat = el.getAttribute('data-cat');
+  S.wasteCat = cat;
+  el.closest('.tpick').querySelectorAll('.tag').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+}
+function pickWasteCat(el,cat){
+  S.wasteCat=cat;
+  el.closest('.tpick').querySelectorAll('.tag').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+}
+
+function saveWaste(){
+  const w=parseFloat(document.getElementById('w-wt')?.value);
+  if(!w){toast('⚠ Enter weight');return;}
+  const note = document.getElementById('w-note')?.value||'';
+  const action = S_WASTE_ACTION;
+
+  // Handle compost linking
+  let compostBatch = '';
+  if(action==='compost'){
+    const sel = document.querySelector('input[name="comp-batch"]:checked');
+    const batchVal = sel ? sel.value : '__new__';
+    if(batchVal==='__new__'){
+      // Auto-create a new compost batch
+      if(!LOGS.compost) LOGS.compost=[];
+      const wType = document.getElementById('w-type')?.value||'';
+      const newBatch = 'W-'+Date.now().toString(36).slice(-4).toUpperCase();
+      LOGS.compost.push({
+        ts:Date.now(), date:today(), batch:newBatch,
+        material:wType, inputKg:w, ratio:'Not measured',
+        note:'Auto-created from Waste Log — '+note,
+        status:'input'
+      });
+      compostBatch = newBatch;
+      toast('✓ Waste logged + Compost Batch '+newBatch+' created');
+    } else {
+      compostBatch = batchVal;
+      // Add weight to existing batch note
+      const existing = (LOGS.compost||[]).find(b=>b.batch===batchVal);
+      if(existing) existing.note = (existing.note?existing.note+', ':'')+'Added '+w+'kg on '+today();
+      toast('✓ Waste logged + added to Batch '+batchVal);
+    }
+  } else {
+    toast('✓ Waste logged: '+w+' kg');
+  }
+
+  const wEntry={ts:Date.now(),date:today(),
+    wasteType:document.getElementById('w-type')?.value,
+    weight:w,action:action,
+    disposal:WASTE_ACTIONS.find(a=>a.id===action)?.en||action,
+    category:S.wasteCat,note:note,compostBatch:compostBatch};
+  LOGS.waste.push(wEntry);
+  const wastePhotos=(PHOTO_STORE['waste']||[]).map(p=>p.driveUrl||p.dataUrl||'').filter(Boolean).join(', ');
+  sheetSave('3_Waste',[wEntry.date,wEntry.wasteType,wEntry.weight,wEntry.category,wEntry.disposal,wEntry.compostBatch,wEntry.note,wastePhotos,S.role]);
+  S_WASTE_ACTION='throw';
+  setTimeout(()=>navigate('waste'),1900);
+}
+
+// ── COMPOST ───────────────────────────────────────────────────────────────
+function renderCompost(el){
+  const ph=S.phase||1;
+  const active=(LOGS.compost||[]).filter(b=>b.status==='input');
+  const allBatches=LOGS.compost||[];
+
+  // Build tabs
+  let html='<div class="ptabs">'
+    +'<button class="ptab'+(ph===1?' act':'')+'" onclick="S.phase=1;navigate(\'compost\')">\u{1F4E5} Input</button>'
+    +'<button class="ptab'+(ph===3?' act':'')+'" onclick="S.phase=3;navigate(\'compost\')">\u{1F33E} Harvest</button>'
+    +'<button class="ptab'+(ph===4?' act':'')+'" onclick="S.phase=4;navigate(\'compost\')">\u{1F4CB} History</button>'
+    +'</div>';
+
+  if(ph===1){
+    html+='<div class="page-header"><h2>Compost Input</h2><p>Log what goes into the bin</p></div>';
+    html+='<div class="fs"><div class="fst">New Batch</div>'
+      +'<div class="fi"><label>Batch #</label><input id="cp-batch" placeholder="e.g. 03"/></div>'
+      +'<div class="fi"><label>Start date</label><div class="av gn">'+today()+'</div></div>'
+      +'<div class="fi"><label>Material type</label><select id="cp-mat">'
+      +'<option>Food scraps + coffee + dry leaves</option>'
+      +'<option>Vegetable/Fruit trimmings</option>'
+      +'<option>Coffee grounds/Tea</option>'
+      +'<option>Mixed materials</option>'
+      +'</select></div>'
+      +'<div class="fi"><label>Input weight (kg)</label><input id="cp-in" type="number" placeholder="0.0" step="0.1"/></div>'
+      +'<div class="fi"><label>C:N Ratio</label><select id="cp-cn">'
+      +'<option>1:2 (Green:Brown)</option><option>1:1</option><option>1:3</option><option>Not measured</option>'
+      +'</select></div>'
+      +'<div class="fi"><label>Note</label><input id="cp-note" placeholder="Any notes..."/></div>'
+      +'</div>';
+    html+='<div class="fs"><div class="fst">Photo — Input Stage</div>'
+      +'<div class="pf"><div class="photo-zone"><div class="photo-thumbs" id="pt-compost1">'
+      +'<label class="photo-add-btn"><input type="file" accept="image/*" multiple onchange="addPhotos(\'compost1\',this)" style="display:none"/>'
+      +'<span style="font-size:22px">📷</span><span>Add photo</span></label>'
+      +'</div></div></div></div>';
+    html+='<button class="sbtn black" onclick="saveCompostInput()">Save Input</button>';
+    if(active.length){
+      html+='<div class="stl" style="margin-top:20px">Active Batches ('+active.length+')</div>';
+      active.forEach(b=>{
+        html+='<div class="ec"><div class="et"><span class="etitle">Batch '+esc(b.batch)+'</span>'
+          +'<span class="edate">'+b.date+'</span></div>'
+          +'<div class="esub">'+esc(b.material)+' · '+b.inputKg+' kg · '+esc(b.ratio)+'</div>'
+          +'<span class="pill gn" style="margin-top:6px;display:inline-block">In progress</span></div>';
+      });
+    }
+
+  } else if(ph===3){
+    html+='<div class="page-header"><h2>Compost Harvest</h2><p>Select a batch to harvest</p></div>';
+    if(!active.length){
+      html+='<div class="ibox or">No active batches — save an Input first.</div>';
+    } else {
+      html+='<div class="stl">Select Batch to Harvest</div>';
+      active.forEach((b,i)=>{
+        html+='<div class="ec" id="harvest-sel-'+i+'" onclick="selectBatch('+i+')" style="cursor:pointer;border:2px solid transparent;transition:border .15s">'
+          +'<div class="et"><span class="etitle">Batch '+esc(b.batch)+'</span><span class="edate">'+b.date+'</span></div>'
+          +'<div class="esub">'+esc(b.material)+' · '+b.inputKg+' kg input</div>'
+          +'<span class="pill or" style="margin-top:4px;display:inline-block">Awaiting harvest</span></div>';
+      });
+      html+='<div class="fs" id="harvest-form" style="display:none;margin-top:12px">'
+        +'<div class="fst">Harvest Details</div>'
+        +'<div class="fi"><label>Harvest date</label><div class="av gn">'+today()+'</div></div>'
+        +'<div class="fi"><label>Input (kg)</label><div class="av gn" id="ch-in-display">—</div></div>'
+        +'<div class="fi"><label>Output (kg)</label><input id="ch-out" type="number" placeholder="Compost produced" step="0.1" oninput="calcRed()"/></div>'
+        +'<div class="fi" style="background:#F0FDF4"><label style="color:#14532D;font-weight:600">% Reduction</label><div class="av gn" id="ch-red">— auto</div></div>'
+        +'<div class="fi"><label>Used at</label><select id="ch-dest">'
+        +'<option>Our Garden Goat BKK</option><option>Donate to community</option>'
+        +'<option>Return to Supplier</option><option>Other</option>'
+        +'</select></div></div>';
+      html+='<div class="fs" id="harvest-photo" style="display:none"><div class="fst">Photo — Harvest</div>'
+        +'<div class="pf"><div class="photo-zone"><div class="photo-thumbs" id="pt-compost3">'
+        +'<label class="photo-add-btn"><input type="file" accept="image/*" multiple onchange="addPhotos(\'compost3\',this)" style="display:none"/>'
+        +'<span style="font-size:22px">📷</span><span>Add photo</span></label>'
+        +'</div></div></div></div>';
+      html+='<button class="sbtn gn" id="harvest-btn" style="display:none" onclick="saveCompostHarvest()">Confirm Harvest</button>';
+    }
+
+  } else {
+    // HISTORY
+    html+='<div class="page-header"><h2>Compost History</h2><p>'+allBatches.length+' batches total</p></div>';
+    if(!allBatches.length){
+      html+='<div style="text-align:center;padding:40px;color:var(--hint)">No compost batches yet.</div>';
+    } else {
+      const totalIn=allBatches.reduce((s,b)=>s+(b.inputKg||0),0);
+      const totalOut=allBatches.filter(b=>b.status==='harvested').reduce((s,b)=>s+(b.outputKg||0),0);
+      html+='<div class="kpi-grid" style="margin-bottom:16px">'
+        +'<div class="kpi-card kpi1"><div class="kl">Total input</div><div><div class="kv">'+totalIn.toFixed(1)+'</div><div class="ku">kg</div></div></div>'
+        +'<div class="kpi-card kpi3"><div class="kl dark">Total compost out</div><div><div class="kv" style="color:var(--offblack)">'+totalOut.toFixed(1)+'</div><div class="ku">kg</div></div></div>'
+        +'</div>';
+      allBatches.slice().reverse().forEach(b=>{
+        const photos=[...(PHOTO_STORE['compost1_'+b.batch]||[]),...(PHOTO_STORE['compost3_'+b.batch]||[])];
+        html+='<div class="ec" style="margin-bottom:10px">'
+          +'<div class="et"><span class="etitle" style="font-size:15px">Batch '+esc(b.batch)+'</span>'
+          +'<span class="pill '+(b.status==='harvested'?'gn':'or')+'">'+(b.status==='harvested'?'Harvested':'In progress')+'</span></div>'
+          +'<div style="font-size:12px;color:var(--muted);margin-top:4px">'+esc(b.material)+' · Started: '+b.date+'</div>'
+          +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray2)">'
+          +'<div><div style="font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.05em">Input</div>'
+          +'<div style="font-size:16px;font-weight:700">'+(b.inputKg||0)+'<span style="font-size:10px;color:var(--muted)"> kg</span></div></div>';
+        if(b.status==='harvested'){
+          html+='<div><div style="font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.05em">Output</div>'
+            +'<div style="font-size:16px;font-weight:700;color:#16A34A">'+(b.outputKg||0)+'<span style="font-size:10px;color:var(--muted)"> kg</span></div></div>'
+            +'<div><div style="font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.05em">Reduction</div>'
+            +'<div style="font-size:16px;font-weight:700;color:#16A34A">'+(b.reduction||0)+'<span style="font-size:10px;color:var(--muted)">%</span></div></div></div>'
+            +'<div style="font-size:11px;color:var(--muted);margin-top:6px">Harvest: '+(b.harvestDate||'—')+' · Used at: '+esc(b.usedAt||'—')+'</div>';
+        } else {
+          html+='<div><div style="font-size:10px;color:var(--hint)">Harvested</div><div style="font-size:13px;color:var(--muted)">Pending</div></div><div></div></div>';
+        }
+        if(b.note) html+='<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic">'+esc(b.note)+'</div>';
+        if(photos.length){
+          html+='<div style="margin-top:10px;border-top:1px solid var(--gray2);padding-top:10px">'
+            +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px">Photos ('+photos.length+')</div>'
+            +'<div style="display:flex;gap:6px;flex-wrap:wrap">';
+          photos.forEach(p=>{ html+='<img src="'+p.dataUrl+'" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--gray2)"/>'; });
+          html+='</div></div>';
+        }
+        html+='<button class="edel" onclick="delCompostBatch(\''+b.batch+'\')">×</button></div>';
+      });
+    }
+  }
+
+  el.innerHTML=html;
+}
+
+
+function selectBatch(i){
+  _selectedBatchIdx = i;
+  document.querySelectorAll('[id^="harvest-sel-"]').forEach((el,j)=>{
+    el.style.borderColor = j===i ? '#16A34A' : 'transparent';
+  });
+  const active=(LOGS.compost||[]).filter(b=>b.status==='input');
+  const b=active[i];
+  const dispEl=document.getElementById('ch-in-display');
+  if(dispEl) dispEl.textContent=b.inputKg+' kg';
+  window._harvestInputKg = b.inputKg;
+  const form=document.getElementById('harvest-form');
+  const photo=document.getElementById('harvest-photo');
+  const btn=document.getElementById('harvest-btn');
+  if(form) form.style.display='block';
+  if(photo) photo.style.display='block';
+  if(btn) btn.style.display='block';
+}
+let _selectedBatchIdx = -1;
+function delCompostBatch(batchNum){
+  showModal('🗑','Delete batch?','Batch '+batchNum+' will be removed.','Delete','#7F1D1D',()=>{
+    LOGS.compost=(LOGS.compost||[]).filter(b=>b.batch!==batchNum);
+    navigate('compost');
+    toast('✓ Batch '+batchNum+' deleted');
+  });
+}
+function saveCompostInput(){
+  const batch=document.getElementById('cp-batch')?.value.trim();
+  if(!batch){toast('⚠ Enter batch number');return;}
+  const kg=parseFloat(document.getElementById('cp-in')?.value)||0;
+  if(!kg){toast('⚠ Enter input weight');return;}
+  if(!LOGS.compost) LOGS.compost=[];
+  // Store photos under batch-specific key
+  if((PHOTO_STORE['compost1']||[]).length){
+    PHOTO_STORE['compost1_'+batch]=PHOTO_STORE['compost1']||[];
+    PHOTO_STORE['compost1']=[];
+  }
+  const cpEntry={ts:Date.now(),date:today(),batch:batch,
+    material:document.getElementById('cp-mat')?.value||'',
+    inputKg:kg,ratio:document.getElementById('cp-cn')?.value||'',
+    note:document.getElementById('cp-note')?.value||'',status:'input'};
+  LOGS.compost.push(cpEntry);
+  sheetSave('4_Compost',[cpEntry.batch,cpEntry.date,'input',cpEntry.material,cpEntry.inputKg,cpEntry.ratio,cpEntry.note,'','','','','',S.role]);
+  toast('✓ Batch '+batch+' saved — go to Harvest when ready');
+  setTimeout(()=>{S.phase=1;navigate('compost');},1800);
+}
+function saveCompostHarvest(){
+  if(_selectedBatchIdx<0){toast('⚠ Select a batch first');return;}
+  const out=parseFloat(document.getElementById('ch-out')?.value)||0;
+  if(!out){toast('⚠ Enter output weight');return;}
+  const active=(LOGS.compost||[]).filter(b=>b.status==='input');
+  const b=active[_selectedBatchIdx];
+  const pct=b.inputKg>0?+((1-out/b.inputKg)*100).toFixed(1):0;
+  b.status='harvested';
+  b.outputKg=out;
+  b.harvestDate=today();
+  b.reduction=pct;
+  b.usedAt=document.getElementById('ch-dest')?.value||'';
+  // Store harvest photos under batch key
+  if((PHOTO_STORE['compost3']||[]).length){
+    PHOTO_STORE['compost3_'+b.batch]=PHOTO_STORE['compost3']||[];
+    PHOTO_STORE['compost3']=[];
+  }
+  _selectedBatchIdx=-1;
+  toast('✓ Harvest complete · '+pct+'% reduction');
+  setTimeout(()=>{S.phase=4;navigate('compost');},1800);
+}
+
+
+function calcRed(){
+  const inp=parseFloat(document.getElementById('ch-in')?.value)||(window._harvestInputKg||0);
+  const out=parseFloat(document.getElementById('ch-out')?.value)||0;
+  const el=document.getElementById('ch-red');
+  if(el&&inp>0)el.textContent=`${((1-out/inp)*100).toFixed(1)}%  (${inp} kg → ${out} kg)`;
+}
+
+// ── ENERGY ────────────────────────────────────────────────────────────────
+function renderEnergy(el){
+  const months=['January 2569','February 2569','March 2569','April 2569','May 2569','June 2569','July 2569','August 2569','September 2569','October 2569','November 2569','December 2569'].map(m=>`<option>${m}</option>`).join('');
+  el.innerHTML=`
+    <div class="ibox bl">📌 Enter monthly bill figures. Values auto-calculate Carbon Scope 1+2 in S7.</div>
+    <div class="fs">
+      <div class="fst">Monthly Bills</div>
+      <div class="fi"><label>Month</label><select id="en-mo">${months}</select></div>
+      <div class="fi"><label>⚡ Electricity (kWh)</label><input id="en-e" type="number" placeholder="From bill" oninput="calcEnergyCO2()"/></div>
+      <div class="fi"><label>💧 Water (units)</label><input id="en-w" type="number" placeholder="From bill" oninput="calcEnergyCO2()"/></div>
+      <div class="fi"><label>🔥 LPG Gas (kg)</label><input id="en-g" type="number" placeholder="From bill" oninput="calcEnergyCO2()"/></div>
+      <div class="fi"><label>🛢 Fuel/Oil (L)</label><input id="en-f" type="number" placeholder="From bill" oninput="calcEnergyCO2()"/></div>
+    </div>
+    <div class="fs">
+      <div class="fst">Carbon Preview (Scope 1+2)</div>
+      <div class="fi"><label>Scope 2 — Electricity</label><div class="av bl" id="en-co2e">—</div></div>
+      <div class="fi"><label>Scope 2 — Water</label><div class="av bl" id="en-co2w">—</div></div>
+      <div class="fi"><label>Scope 1 — Gas</label><div class="av or" id="en-co2g">—</div></div>
+      <div class="fi"><label>Scope 1 — Fuel</label><div class="av or" id="en-co2f">—</div></div>
+      <div class="fi" style="background:var(--rd-l)"><label style="color:var(--rd-d);font-weight:600">This month total</label><div class="av rd" id="en-total">—</div></div>
+    </div>
+    <div class="fs"><div class="fst">Bill Photo</div><div class="pf" id="pf-energy">
+        <div class="photo-zone" id="pz-energy">
+          <div class="photo-thumbs" id="pt-energy">
+            <label class="photo-add-btn">
+              <input type="file" accept="image/*" multiple onchange="addPhotos(\'energy\',this)" style="display:none"/>
+              <span style="font-size:22px">📷</span>
+              <span>Add photo</span>
+            </label>
+          </div>
+        </div>
+      </div></div>
+    <div class="stl">Energy Log (${LOGS.energy.length} months)</div>
+    <div id="en-log">${energyLog()}</div>
+    <button class="sbtn bl" onclick="saveEnergy()">Save Energy Record</button>`;
+}
+function calcEnergyCO2(){
+  const e=parseFloat(document.getElementById('en-e')?.value)||0;
+  const w=parseFloat(document.getElementById('en-w')?.value)||0;
+  const g=parseFloat(document.getElementById('en-g')?.value)||0;
+  const f=parseFloat(document.getElementById('en-f')?.value)||0;
+  const ce=e*EF.elec,cw=w*EF.water,cg=g*EF.lpg,cf=f*EF.diesel,tot=ce+cw+cg+cf;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v>0?`${v.toFixed(2)} kg CO₂e`:'—';};
+  s('en-co2e',ce);s('en-co2w',cw);s('en-co2g',cg);s('en-co2f',cf);
+  const t=document.getElementById('en-total');
+  if(t)t.textContent=tot>0?`${tot.toFixed(2)} kg  (${(tot/1000).toFixed(4)} ton CO₂e)`:'—';
+}
+function energyLog(){
+  if(!LOGS.energy.length)return`<div style="padding:12px 0;color:var(--hint);font-size:12px">No energy records yet.</div>`;
+  return LOGS.energy.slice().reverse().slice(0,3).map((r,i)=>`
+    <div class="ec">
+      <div class="et"><span class="etitle">${esc(r.month)}</span><span class="edate">${r.date}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span class="esub">Elec: ${r.elec||0} kWh · Gas: ${r.gas||0} kg · Water: ${r.water||0} u</span>
+        <span class="pill bl">S4</span>
+      </div>
+      <button class="edel" onclick="delLog('energy',${LOGS.energy.length-1-i},this)">×</button>
+    </div>`).join('');
+}
+function saveEnergy(){
+  const enEntry={ts:Date.now(),date:today(),
+    month:document.getElementById('en-mo')?.value,
+    elec:document.getElementById('en-e')?.value||0,
+    water:document.getElementById('en-w')?.value||0,
+    gas:document.getElementById('en-g')?.value||0,
+    fuel:document.getElementById('en-f')?.value||0};
+  LOGS.energy.push(enEntry);
+  sheetSave('6_Energy',[enEntry.month,new Date().getFullYear()+543,enEntry.elec,enEntry.water,enEntry.gas,enEntry.fuel,enEntry.date,S.role]);
+  toastSave('Energy record');
+}
+
+// ── CSR ───────────────────────────────────────────────────────────────────
+function renderCSR(el){
+  el.innerHTML=`
+    <div class="fs">
+      <div class="fst">CSR Activity</div>
+      <div class="fi"><label>Date</label><div class="av gn">${today()}</div></div>
+      <div class="fi"><label>Activity name</label><input id="csr-title" placeholder="Activity name..."/></div>
+      <div class="fi"><label>Type</label><select id="csr-type"><option>Donation</option><option>Staff welfare</option><option>Workshop/Training</option><option>Community event</option><option>Environmental initiative</option><option>Other</option></select></div>
+      <div class="fi"><label>Location</label><input id="csr-loc" placeholder="Location..."/></div>
+      <div class="fi"><label>Participants</label><input id="csr-pax" placeholder="Attendees / recipients..."/></div>
+      <div class="fi"><label>Details</label><textarea id="csr-det" placeholder="Activity details..."></textarea></div>
+    </div>
+    <div class="fs"><div class="fst">Photo</div><div class="pf" id="pf-csr">
+        <div class="photo-zone" id="pz-csr">
+          <div class="photo-thumbs" id="pt-csr">
+            <label class="photo-add-btn">
+              <input type="file" accept="image/*" multiple onchange="addPhotos(\'csr\',this)" style="display:none"/>
+              <span style="font-size:22px">📷</span>
+              <span>Add photo</span>
+            </label>
+          </div>
+        </div>
+      </div></div>
+    <div class="stl">CSR Log (${LOGS.csr.length} activities)</div>
+    <div id="csr-log">${csrLog()}</div>
+    <button class="sbtn bl" onclick="saveCSR()">Save CSR Activity</button>`;
+}
+function csrLog(){
+  if(!LOGS.csr.length)return`<div style="padding:12px 0;color:var(--hint);font-size:12px">No CSR activities yet.</div>`;
+  return LOGS.csr.slice().reverse().slice(0,4).map((r,i)=>`
+    <div class="ec">
+      <div class="et"><span class="etitle">${esc(r.title)}</span><span class="edate">${r.date}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span class="esub">${esc(r.type)} · ${esc(r.location||'')}</span>
+        <span class="pill am">CSR</span>
+      </div>
+      <button class="edel" onclick="delLog('csr',${LOGS.csr.length-1-i},this)">×</button>
+    </div>`).join('');
+}
+function saveCSR(){
+  const t=document.getElementById('csr-title')?.value.trim();
+  if(!t){toast('⚠ Enter activity name');return;}
+  const csrEntry={ts:Date.now(),date:today(),title:t,
+    type:document.getElementById('csr-type')?.value,
+    location:document.getElementById('csr-loc')?.value,
+    participants:document.getElementById('csr-pax')?.value,
+    details:document.getElementById('csr-det')?.value};
+  LOGS.csr.push(csrEntry);
+  sheetSave('7_CSR',[csrEntry.date,csrEntry.title,csrEntry.type,csrEntry.location,csrEntry.participants,csrEntry.details,S.role]);
+  toastSave('CSR Activity');
+}
+
+// ── CARBON DASHBOARD ──────────────────────────────────────────────────────
+function renderCarbon(el){
+  const s3kg=LOGS.transport.reduce((s,r)=>s+(r.co2e||0),0);
+  const totKm=LOGS.transport.reduce((s,r)=>s+(r.totalKm||0),0);
+  const s1=LOGS.energy.reduce((s,r)=>s+(+r.gas||0)*2.983+(+r.fuel||0)*2.640,0)||2100;
+  const s2=LOGS.energy.reduce((s,r)=>s+(+r.elec||0)*0.4999+(+r.water||0)*0.335,0)||3600;
+  const grand=(s1+s2+s3kg)/1000;
+  const byV={};
+  LOGS.transport.forEach(r=>{const k=r.vehicle||'?';if(!byV[k])byV[k]={trips:0,km:0,co2:0};byV[k].trips+=(r.trips||1);byV[k].km+=(r.totalKm||0);byV[k].co2+=(r.co2e||0);});
+  el.innerHTML=`
+    <div style="background:#0A0A0A;border-radius:var(--r);padding:20px;color:#fff;margin-bottom:16px">
+      <div style="font-size:10px;opacity:.5;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Grand Total 2569</div>
+      <div style="font-size:44px;font-weight:700;font-family:var(--font-display);line-height:1">${grand.toFixed(3)}</div>
+      <div style="font-size:12px;opacity:.6;margin-top:4px">ton CO₂e</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)">
+        <div style="text-align:center">
+          <div style="font-size:11px;opacity:.5;margin-bottom:3px">Scope 1</div>
+          <div style="font-size:17px;font-weight:700;color:#FCA5A5">${(s1/1000).toFixed(3)}</div>
+          <div style="font-size:9px;opacity:.4">ton</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;opacity:.5;margin-bottom:3px">Scope 2</div>
+          <div style="font-size:17px;font-weight:700;color:#93C5FD">${(s2/1000).toFixed(3)}</div>
+          <div style="font-size:9px;opacity:.4">ton</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;opacity:.5;margin-bottom:3px">Scope 3</div>
+          <div style="font-size:17px;font-weight:700;color:#FDB97D">${(s3kg/1000).toFixed(3)}</div>
+          <div style="font-size:9px;opacity:.4">ton</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scope-card s1">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div class="scope-lbl" style="color:#B91C1C">Scope 1 — Direct combustion</div>
+          <div class="scope-sub">LPG gas + fuel oil</div>
+        </div>
+        <div class="scope-val" style="color:#B91C1C">${(s1/1000).toFixed(3)}<div style="font-size:10px;font-weight:400;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${(s1/(s1+s2+s3kg)*100).toFixed(0)}%;background:#EF4444"></div></div>
+      <div class="scope-ef">EF: LPG 2.983 · Diesel 2.640 kgCO₂e/unit (TGO 2022)</div>
+    </div>
+
+    <div class="scope-card s2">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div class="scope-lbl" style="color:#1D4ED8">Scope 2 — Electricity & Water</div>
+          <div class="scope-sub">Grid electricity + water supply</div>
+        </div>
+        <div class="scope-val" style="color:#1D4ED8">${(s2/1000).toFixed(3)}<div style="font-size:10px;font-weight:400;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${(s2/(s1+s2+s3kg)*100).toFixed(0)}%;background:#3B82F6"></div></div>
+      <div class="scope-ef">EF: Electricity 0.4999 kgCO₂e/kWh (EGAT 2023)</div>
+    </div>
+
+    <div class="scope-card s3">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div class="scope-lbl" style="color:#C2410C">Scope 3 — Supplier transport</div>
+          <div class="scope-sub">From actual transport log · ${LOGS.transport.length} trips · ${totKm.toFixed(0)} km</div>
+        </div>
+        <div class="scope-val" style="color:#C2410C">${(s3kg/1000).toFixed(4)}<div style="font-size:10px;font-weight:400;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${s3kg>0?(s3kg/(s1+s2+s3kg)*100).toFixed(0):2}%;background:#EA580C"></div></div>
+      ${Object.entries(byV).map(([v,d])=>`
+        <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-top:1px solid rgba(0,0,0,.06)">
+          <span style="color:var(--muted)">${v}</span>
+          <span style="color:var(--muted)">${d.trips} trips · ${d.km.toFixed(0)} km</span>
+          <span style="font-weight:600;color:#C2410C">${d.co2.toFixed(3)} kg</span>
+        </div>`).join('')}
+      ${!LOGS.transport.length?'<div style="font-size:11px;color:var(--hint);margin-top:6px">No transport logged yet — Yok logs trips in Transport.</div>':''}
+    </div>
+
+    <div class="ef-box">
+      <div style="font-size:12px;font-weight:600;color:#14532D;margin-bottom:8px">Emission Factors (TGO/EGAT 2023)</div>
+      <div class="ef-row"><span>Electricity</span><span>0.4999 kgCO₂e/kWh</span></div>
+      <div class="ef-row"><span>Water</span><span>0.335 kgCO₂e/unit</span></div>
+      <div class="ef-row"><span>LPG Gas</span><span>2.983 kgCO₂e/kg</span></div>
+      <div class="ef-row"><span>Diesel</span><span>2.640 kgCO₂e/L</span></div>
+      <div class="ef-row"><span>Pickup (Diesel)</span><span>0.173 kgCO₂e/km</span></div>
+      <div class="ef-row"><span>Truck</span><span>0.220 kgCO₂e/km</span></div>
+      <div class="ef-row"><span>Motorcycle</span><span>0.103 kgCO₂e/km</span></div>
+      <div class="ef-row"><span>EV</span><span>0.050 kgCO₂e/km</span></div>
+    </div>
+  `;
+}
+
+
+// Sheet name map for each log key
+const LOG_SHEET_MAP = {
+  sourcing:'1_Sourcing', transport:'2_Transport', waste:'3_Waste',
+  compost:'4_Compost', usage:'5_Usage', energy:'6_Energy', csr:'7_CSR'
+};
+const LOG_FALLBACK_COL = {
+  sourcing:2, transport:3, waste:2, compost:0, usage:2, energy:0, csr:2
+};
+const LOG_FALLBACK_FIELD = {
+  sourcing:'ingredient', transport:'supplier', waste:'wasteType',
+  compost:'batch', usage:'ingredient', energy:'month', csr:'title'
+};
+
+function delLog(key,idx,btn){
+  showModal('🗑','Delete entry?','This cannot be undone.','Delete','var(--rd-d)',()=>{
+    const arr = key==='recipes' ? RECIPES : (LOGS[key]||[]);
+    const record = arr[idx];
+    arr.splice(idx,1);
+    if(btn && btn.closest) btn.closest('.ec')?.remove();
+    toast('✓ Entry deleted');
+    if(record && LOG_SHEET_MAP[key]){
+      const fallbackField = LOG_FALLBACK_FIELD[key];
+      const fallbackCol = LOG_FALLBACK_COL[key];
+      fetch(SHEET_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({
+          action:'delete',
+          sheet:LOG_SHEET_MAP[key],
+          ts: String(record.ts||''),
+          fallback: fallbackField ? String(record[fallbackField]||'') : '',
+          matchCol: fallbackCol||2
+        })
+      }).catch(()=>{});
+    }
+  });
+}
+
+// ── OWNER HOME ────────────────────────────────────────────────────────────
+function renderOwnerHome(el){
+  const s3=LOGS.transport.reduce((s,r)=>s+(r.co2e||0),0);
+  const wt=LOGS.waste.reduce((s,r)=>s+(+r.weight||0),0);
+  el.innerHTML=`
+    <div class="hh" style="background:#1C1917">
+      <div style="font-size:11px;opacity:.55;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Owner Dashboard</div>
+      <div style="font-size:20px;font-weight:700">GOAT Sustainability</div>
+      <div style="font-size:11px;opacity:.55;margin-top:2px">Michelin Green Star · ${today()}</div>
+    </div>
+    <div class="kgrid">
+      <div class="kcard gn"><div class="kl">Sourcing logs</div><div class="kv">${LOGS.sourcing.length}<span class="ku"> items</span></div></div>
+      <div class="kcard rd"><div class="kl">Total waste</div><div class="kv">${wt.toFixed(1)}<span class="ku"> kg</span></div></div>
+      <div class="kcard bl"><div class="kl">Scope 3 CO₂e</div><div class="kv">${(s3/1000).toFixed(3)}<span class="ku"> t</span></div></div>
+      <div class="kcard pu"><div class="kl">R&D Recipes</div><div class="kv">${RECIPES.length}<span class="ku"> total</span></div></div>
+    </div>
+    <div class="stl">Reports</div>
+    <div class="mcard">
+      <button class="mi" onclick="navigate('rep-summary')"><div class="iw" style="background:#F5F5F4">📊</div><div class="inf"><div class="mn">Full Summary</div><div class="md">All KPIs in one view</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rep-carbon')"><div class="iw" style="background:#FEE2E2">🌍</div><div class="inf"><div class="mn">Carbon Report</div><div class="md">Scope 1+2+3 · TGO/EGAT EF</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rep-all')"><div class="iw" style="background:#EDE9FE">📋</div><div class="inf"><div class="mn">All Records</div><div class="md">Every log from all roles</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rd-view')"><div class="iw" style="background:#FCE7F3">🔬</div><div class="inf"><div class="mn">R&D Library</div><div class="md">All Pastry & Mixo recipes</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('ing-db')"><div class="iw" style="background:#F0FDF4">🌿</div><div class="inf"><div class="mn">Ingredient Database</div><div class="md">${DB.length} ingredients</div></div><span class="chv">›</span></button>
+    </div>`;
+}
+
+function renderRepSummary(el){
+  const fSrc=filterRep(LOGS.sourcing);
+  const fTrp=filterRep(LOGS.transport);
+  const fWst=filterRep(LOGS.waste);
+  const fRec=filterRep(RECIPES);
+  const fCsr=filterRep(LOGS.csr);
+  const fEn=filterRep(LOGS.energy);
+  const s3=fTrp.reduce((s,r)=>s+(r.co2e||0),0);
+  const totKm=fTrp.reduce((s,r)=>s+(r.totalKm||0),0);
+  const wt=fWst.reduce((s,r)=>s+(+r.weight||0),0);
+  const org=fWst.filter(r=>r.category==='Organic waste').reduce((s,r)=>s+(+r.weight||0),0);
+  const rec=fWst.filter(r=>r.category==='Recyclable').reduce((s,r)=>s+(+r.weight||0),0);
+  const gen=fWst.filter(r=>r.category==='General waste').reduce((s,r)=>s+(+r.weight||0),0);
+  const approved=fRec.filter(r=>r.status&&r.status.includes('Approved'));
+  const onMenu=fRec.filter(r=>r.status==='On Menu');
+  const uniqueSuppliers=[...new Set(fSrc.map(r=>r.supplier).filter(Boolean))];
+  const byVehicle={};
+  fTrp.forEach(r=>{const k=r.vehicle||'?';if(!byVehicle[k])byVehicle[k]={trips:0,km:0,co2:0};byVehicle[k].trips+=(r.trips||1);byVehicle[k].km+=(r.totalKm||0);byVehicle[k].co2+=(r.co2e||0);});
+  const wasteByMethod={};
+  fWst.forEach(r=>{const k=r.disposal||'?';wasteByMethod[k]=(wasteByMethod[k]||0)+(+r.weight||0);});
+  function row(label,val,unit='',color=''){
+    return `<div class="fi"><label style="width:170px;font-size:12px">${label}</label><div class="av${color?' '+color:''}">${val}${unit?' <span style=\"font-size:11px;font-weight:400;color:var(--muted)\">'+unit+'</span>':''}</div></div>`;
+  }
+  el.innerHTML=`
+    <div style="background:var(--offblack);border-radius:var(--r);padding:18px;color:#fff;margin-bottom:14px">
+      <div style="font-size:11px;opacity:.5;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Michelin Green Star · Full Report</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:4px">
+        <div><div style="font-size:26px;font-weight:700">${LOGS.sourcing.length}</div><div style="font-size:10px;opacity:.55">sourcing logs</div></div>
+        <div><div style="font-size:26px;font-weight:700">${wt.toFixed(0)}</div><div style="font-size:10px;opacity:.55">kg waste</div></div>
+        <div><div style="font-size:26px;font-weight:700">${(s3/1000).toFixed(3)}</div><div style="font-size:10px;opacity:.55">ton CO₂e S3</div></div>
+      </div>
+    </div>
+
+    <div class="stl">A — Sourcing & Ingredients (Fluke)</div>
+    <div class="fs">
+      ${row('Ingredients logged',LOGS.sourcing.length,'items','gn')}
+      ${row('Unique suppliers',uniqueSuppliers.length,'suppliers','gn')}
+      ${row('Usage records',(LOGS.usage||[]).length,'records')}
+      ${row('Avg %Waste',(LOGS.usage&&LOGS.usage.length?((LOGS.usage||[]).reduce((s,r)=>s+(r.wastePct||0),0)/LOGS.usage.length).toFixed(1):0)+'%')}
+      ${row('Top suppliers',uniqueSuppliers.slice(0,3).join(', ')||'—')}
+    </div>
+
+    <div class="stl">B1 — Transport & Carbon Scope 3 (Yok)</div>
+    <div class="fs">
+      ${row('Total trips',LOGS.transport.length,'trips','or')}
+      ${row('Total distance',totKm.toFixed(0),'km','or')}
+      ${row('CO₂e Scope 3',s3.toFixed(2),'kg ('+( s3/1000).toFixed(4)+' ton)','or')}
+      ${Object.entries(byVehicle).map(([v,d])=>row(v,d.trips+' trips · '+d.km.toFixed(0)+' km',d.co2.toFixed(2)+' kg CO₂e')).join('')}
+    </div>
+
+    <div class="stl">B2 — Waste Management (Yok)</div>
+    <div class="fs">
+      ${row('Total waste',wt.toFixed(1),'kg','rd')}
+      ${row('Organic waste',org.toFixed(1),'kg ('+( wt>0?(org/wt*100).toFixed(0):0)+'%)','gn')}
+      ${row('Recyclable',rec.toFixed(1),'kg')}
+      ${row('General waste',gen.toFixed(1),'kg')}
+      ${Object.entries(wasteByMethod).slice(0,4).map(([m,v])=>row(m,v.toFixed(1),'kg')).join('')}
+    </div>
+
+    <div class="stl">B3 — Energy & Carbon S1+S2 (Joy)</div>
+    <div class="fs">
+      ${row('Energy records',fEn.length,'months','bl')}
+      ${row('Total electricity',fEn.reduce((s,r)=>s+(+r.elec||0),0).toFixed(0),'kWh')}
+      ${row('Total gas',fEn.reduce((s,r)=>s+(+r.gas||0),0).toFixed(1),'kg LPG')}
+      ${row('Scope 1+2 est.',(fEn.reduce((s,r)=>s+(+r.elec||0)*0.4999+(+r.water||0)*0.335+(+r.gas||0)*2.983+(+r.fuel||0)*2.640,0)/1000).toFixed(3),'ton CO₂e','rd')}
+    </div>
+
+    <div class="stl">C — R&D & Creative (Peter / Pastry / Mixo)</div>
+    <div class="fs">
+      ${row('Total recipes',fRec.length,'','pu')}
+      ${row('Peter R&D',fRec.filter(r=>r.role==='peter').length,'recipes')}
+      ${row('Pastry',RECIPES.filter(r=>r.role==='pastry').length,'recipes')}
+      ${row('Mixologist',RECIPES.filter(r=>r.role==='mixo').length,'recipes')}
+      ${row('Approved',approved.length,'recipes','gn')}
+      ${row('On Menu',onMenu.length,'dishes','gn')}
+      ${row('Ingredient DB size',DB.length,'ingredients')}
+    </div>
+
+    <div class="stl">D — Operations (Joy)</div>
+    <div class="fs">
+      ${row('CSR activities',fCsr.length,'activities','bl')}
+      ${fCsr.slice(0,3).map(c=>row(c.title||'—',c.type||'',c.date||'')).join('')}
+    </div>
+  `;
+  repFilterBar(el);
+}
+
+
+function renderRepCarbon(el){
+  // Use filtered transport for Scope 3
+  const fTrp=filterRep(LOGS.transport);
+  const s3kg=fTrp.reduce((s,r)=>s+(r.co2e||0),0);
+  const totKm=fTrp.reduce((s,r)=>s+(r.totalKm||0),0);
+  const fEn=filterRep(LOGS.energy);
+  const s1=fEn.reduce((s,r)=>s+(+r.gas||0)*2.983+(+r.fuel||0)*2.640,0);
+  const s2=fEn.reduce((s,r)=>s+(+r.elec||0)*0.4999+(+r.water||0)*0.335,0);
+  const grand=(s1+s2+s3kg)/1000;
+  const byVehicle={};
+  fTrp.forEach(r=>{const k=r.vehicle||'?';if(!byVehicle[k])byVehicle[k]={trips:0,km:0,co2:0};byVehicle[k].trips+=(r.trips||1);byVehicle[k].km+=(r.totalKm||0);byVehicle[k].co2+=(r.co2e||0);});
+  el.innerHTML=`
+    <div style="background:#7F1D1D;border-radius:var(--r);padding:18px;color:#fff;margin-bottom:14px">
+      <div style="font-size:11px;opacity:.6;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Carbon Footprint · Filtered Period</div>
+      <div style="font-size:36px;font-weight:800;line-height:1">${grand.toFixed(3)}</div>
+      <div style="font-size:12px;opacity:.7;margin-top:3px">ton CO₂e</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;border-top:1px solid rgba(255,255,255,.15);padding-top:10px">
+        <div><div style="font-size:15px;font-weight:700">${(s1/1000).toFixed(3)}</div><div style="font-size:10px;opacity:.6">Scope 1 ton</div></div>
+        <div><div style="font-size:15px;font-weight:700">${(s2/1000).toFixed(3)}</div><div style="font-size:10px;opacity:.6">Scope 2 ton</div></div>
+        <div><div style="font-size:15px;font-weight:700">${(s3kg/1000).toFixed(3)}</div><div style="font-size:10px;opacity:.6">Scope 3 ton</div></div>
+      </div>
+    </div>
+    <div class="scope-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:600;color:#EF4444">Scope 1 — Direct combustion</div><div style="font-size:11px;color:var(--muted)">LPG gas + fuel (from Energy log)</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:700;color:#EF4444">${(s1/1000).toFixed(3)}</div><div style="font-size:10px;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${grand>0?(s1/1000/grand*100).toFixed(0):0}%;background:#EF4444"></div></div>
+      <div style="font-size:11px;color:var(--muted)">LPG: 2.983 · Diesel: 2.640 kgCO₂e/unit (TGO 2022)</div>
+    </div>
+    <div class="scope-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:600;color:#3B82F6">Scope 2 — Electricity & Water</div><div style="font-size:11px;color:var(--muted)">Grid electricity + water supply</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:700;color:#3B82F6">${(s2/1000).toFixed(3)}</div><div style="font-size:10px;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${grand>0?(s2/1000/grand*100).toFixed(0):0}%;background:#3B82F6"></div></div>
+    </div>
+    <div class="scope-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:600;color:#EA580C">Scope 3 — Supplier transport</div><div style="font-size:11px;color:var(--muted)">${fTrp.length} trips · ${totKm.toFixed(0)} km (filtered)</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:700;color:#EA580C">${(s3kg/1000).toFixed(4)}</div><div style="font-size:10px;color:var(--muted)">ton CO₂e</div></div>
+      </div>
+      <div class="prog"><div class="progf" style="width:${grand>0?(s3kg/1000/grand*100).toFixed(0):1}%;background:#EA580C"></div></div>
+      ${Object.entries(byVehicle).map(([v,d])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid var(--gray2)"><span>${v}</span><span style="color:var(--muted)">${d.trips} trips · ${d.km.toFixed(0)} km</span><span style="font-weight:600;color:#EA580C">${d.co2.toFixed(3)} kg</span></div>`).join('')}
+      ${!fTrp.length?'<div style="font-size:11px;color:var(--hint);margin-top:6px">No transport in this period.</div>':''}
+    </div>
+    <div class="ef-box">
+      <div style="font-size:12px;font-weight:600;color:#14532D;margin-bottom:7px">Emission Factors (TGO/EGAT 2023)</div>
+      <div class="ef-row"><span>Electricity</span><span>0.4999 kgCO₂e/kWh</span></div>
+      <div class="ef-row"><span>LPG Gas</span><span>2.983 kgCO₂e/kg</span></div>
+      <div class="ef-row"><span>Diesel</span><span>2.640 kgCO₂e/L</span></div>
+      <div class="ef-row"><span>Pickup Diesel</span><span>0.173 kgCO₂e/km</span></div>
+      <div class="ef-row"><span>Truck Diesel</span><span>0.220 kgCO₂e/km</span></div>
+      <div class="ef-row"><span>Motorcycle</span><span>0.103 kgCO₂e/km</span></div>
+    </div>`;
+  repFilterBar(el);
+}
+
+function renderRepAll(el){
+  const raw=[
+    ...LOGS.sourcing.map(r=>({...r,type:'Sourcing',sub:r.supplier||'',tc:'gn'})),
+    ...LOGS.transport.map(r=>({...r,type:'Transport',sub:(r.totalKm||0)+' km · '+(r.co2e||0).toFixed(3)+' kg CO₂e',tc:'or'})),
+    ...LOGS.waste.map(r=>({...r,type:'Waste',sub:(r.weight||0)+' kg · '+(r.disposal||''),tc:'te'})),
+    ...LOGS.energy.map(r=>({...r,type:'Energy',sub:r.month||'',tc:'bl'})),
+    ...LOGS.csr.map(r=>({...r,type:'CSR',sub:r.type||'',tc:'am'})),
+    ...(LOGS.compost||[]).map(r=>({...r,type:'Compost',name:'Batch '+r.batch,sub:r.status+' · '+(r.inputKg||0)+' kg',tc:'gn'})),
+    ...RECIPES.map(r=>({...r,type:'Recipe',name:r.name,sub:(ROLES[r.role]?.name||r.role)+' · '+(r.type||''),tc:'pu'})),
+  ].sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const all=filterRep(raw);
+  const total=all.length;
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-size:16px;font-weight:600">All Records</span>
+      <span style="font-size:20px;font-weight:800;color:var(--gr-d)">${total}</span>
+    </div>
+    ${total===0?'<div style="text-align:center;padding:40px;color:var(--hint)">No records in this period.</div>':
+    all.map(r=>'<div class="ec">'+
+      '<div class="et"><span class="etitle">'+esc(r.name||r.ingredient||r.supplier||r.wasteType||r.title||r.month||'—')+'</span><span class="edate">'+(r.date||'—')+'</span></div>'+
+      '<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="esub">'+esc(r.sub||'')+'</span><span class="pill '+r.tc+'">'+r.type+'</span></div>'+
+      '</div>').join('')
+    }`;
+  repFilterBar(el);
+}
+
+
+// ── REPORT PERIOD FILTER ─────────────────────────────────────────────────
+function repFilterBar(el){
+  const periods=['all','today','week','month','year'];
+  const labels=['All Time','Today','This Week','This Month','This Year'];
+  const bar=document.createElement('div');
+  bar.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px';
+  periods.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.textContent=labels[i];
+    btn.className='ftab'+(S.repPeriod===p?' active':'');
+    btn.style.cssText='font-size:12px;padding:7px 13px';
+    btn.onclick=()=>{
+      S.repPeriod=p;
+      const page=S.page;
+      navigate(page);
+    };
+    bar.appendChild(btn);
+  });
+  el.prepend(bar);
+}
+function filterRep(arr){
+  if(!arr||!arr.length)return[];
+  const now=new Date();
+  const p=S.repPeriod||'all';
+  if(p==='all')return arr;
+  return arr.filter(r=>{
+    if(!r.ts)return p==='all';
+    const d=new Date(r.ts);
+    if(p==='today') return d.toDateString()===now.toDateString();
+    if(p==='week'){const w=new Date(now); w.setDate(w.getDate()-7); return d>=w;}
+    if(p==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    if(p==='year') return d.getFullYear()===now.getFullYear();
+    return true;
+  });
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Load passwords from Sheets on page load
+  loadPasswordsFromSheet();
+});
+
+
+// ── SIDEBAR ──────────────────────────────────────────────────────────────
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sb-overlay').classList.add('open');
+  const ro=ROLES[S.role];
+  const sbNav=document.getElementById('sb-nav');
+  const sbName=document.getElementById('sb-role-name');
+  const sbTitle=document.getElementById('sb-role-title');
+  if(sbName)sbName.textContent=ro.name;
+  if(sbTitle)sbTitle.textContent=ro.title;
+  if(sbNav)sbNav.innerHTML=ro.tabs.map(t=>`
+    <button class="sb-item${S.page===t.id?' active':''}" onclick="navigate('${t.id}');closeSidebar()">
+      ${t.lb}
+    </button>`).join('');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+}
+
+
+// ── ROLE-BASED KPI CARDS ─────────────────────────────────────────────────
+function kpiCard(cls, label, value, unit, dark=false){
+  return `<div class="kpi-card ${cls}">
+    <div class="kl${dark?' dark':''}">${label}</div>
+    <div><div class="kv"${dark?' style="color:var(--offblack)"':''}>${value}</div><div class="ku"${dark?' style="color:var(--muted)"':''}>${unit}</div></div>
+  </div>`;
+}
+function renderKPIs(role,fSrc,fTrp,fWst,fRec,scope3,wt){
+  const myRec=fRec.filter(r=>r.role===role);
+  const allRec=fRec.length;
+  const co2=scope3>=1000?(scope3/1000).toFixed(2):scope3.toFixed(1);
+  const co2u=scope3>=1000?'ton':'kg CO₂e';
+  switch(role){
+    case 'fluke':
+      return kpiCard('kpi1','Sourcing logged',fSrc.length,'items')
+            +kpiCard('kpi2','Ingredient usage',(LOGS.usage||[]).length,'records')
+            +kpiCard('kpi3','My Recipes',myRec.length,'saved',true)
+            +kpiCard('kpi4','R&D Library',RECIPES.length,'total');
+    case 'yok':
+    case 'staff':
+      return kpiCard('kpi1','Transport trips',fTrp.length,'trips')
+            +kpiCard('kpi2','Waste logged',wt.toFixed(1),'kg')
+            +kpiCard('kpi3','Transport CO₂e',co2,co2u,true)
+            +kpiCard('kpi4','My Recipes',myRec.length,'saved');
+    case 'peter':
+      return kpiCard('kpi1','My R&D',myRec.length,'recipes')
+            +kpiCard('kpi2','Approved',myRec.filter(r=>r.status&&r.status.includes('Approved')).length,'items')
+            +kpiCard('kpi3','Ingredients',DB.length,'in DB',true)
+            +kpiCard('kpi4','Techniques',[...new Set(myRec.map(r=>r.tech).filter(Boolean))].length,'used');
+    case 'pastry':
+      return kpiCard('kpi1','My Pastry R&D',myRec.length,'recipes')
+            +kpiCard('kpi2','Approved',myRec.filter(r=>r.status&&r.status.includes('Approved')).length,'items')
+            +kpiCard('kpi3','On Menu',myRec.filter(r=>r.status==='On Menu').length,'dishes',true)
+            +kpiCard('kpi4','Ingredients',DB.length,'in DB');
+    case 'mixo':
+      return kpiCard('kpi1','My Bar R&D',myRec.length,'recipes')
+            +kpiCard('kpi2','Approved',myRec.filter(r=>r.status&&r.status.includes('Approved')).length,'items')
+            +kpiCard('kpi3','On Menu',myRec.filter(r=>r.status==='On Menu').length,'drinks',true)
+            +kpiCard('kpi4','Ingredients',DB.length,'in DB');
+    case 'joy':
+      return kpiCard('kpi1','Energy records',LOGS.energy.length,'months')
+            +kpiCard('kpi2','CSR activities',LOGS.csr.length,'logged')
+            +kpiCard('kpi3','Carbon Scope 3',co2,co2u,true)
+            +kpiCard('kpi4','Transport trips',fTrp.length,'trips');
+    default:
+      return kpiCard('kpi1','Sourcing',fSrc.length,'items')
+            +kpiCard('kpi2','Waste',wt.toFixed(1),'kg')
+            +kpiCard('kpi3','CO₂e',co2,co2u,true)
+            +kpiCard('kpi4','Recipes',allRec,'total');
+  }
+}
+
+// ── OVERRIDE renderHome for new design ───────────────────────────────────
+renderHome = function(el){
+  if(S.role==='owner'){renderOwnerHome(el);return;}
+  const ro=ROLES[S.role];
+  // Date filtering helper
+  function filterByPeriod(arr, period){
+    if(period==='all') return arr;
+    const now=new Date();
+    return arr.filter(r=>{
+      if(!r.ts) return true;
+      const d=new Date(r.ts);
+      if(period==='day'){
+        return d.toDateString()===now.toDateString();
+      } else if(period==='week'){
+        const weekAgo=new Date(now-7*864e5);
+        return d>=weekAgo;
+      } else if(period==='month'){
+        return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+      }
+      return true;
+    });
+  }
+  const period=S.ovPeriod||'all';
+  const fSourcing=filterByPeriod(LOGS.sourcing,period);
+  const fTransport=filterByPeriod(LOGS.transport,period);
+  const fWaste=filterByPeriod(LOGS.waste,period);
+  const fRecipes=filterByPeriod(RECIPES,period);
+  const scope3=fTransport.reduce((s,r)=>s+(r.co2e||0),0);
+  const wt=fWaste.reduce((s,r)=>s+(+r.weight||0),0);
+  const myRec=RECIPES.filter(r=>r.role===S.role);
+
+  const menus={
+    fluke:[
+      {pg:'sourcing',ic:'🌿',bg:'#DCFCE7',nm:'Sourcing',ds:'Log ingredients'},
+      {pg:'usage',ic:'🍽',bg:'#DCFCE7',nm:'Usage',ds:'%Waste auto'},
+      {pg:'recipe',ic:'📖',bg:'#F0FDF4',nm:'Recipes',ds:myRec.length+' saved'},
+      {pg:'rd-view',ic:'🔬',bg:'#EDE9FE',nm:'R&D',ds:'All recipes'},
+      {pg:'sourcing-history',ic:'📋',bg:'#DCFCE7',nm:'Sourcing History',ds:LOGS.sourcing.length+' records'},
+      {pg:'ing-db',ic:'🌿',bg:'#F0FDF4',nm:'Ingredients',ds:DB.length+' items'},
+    ],
+    yok:[
+      {pg:'transport',ic:'🚚',bg:'#FFEDD5',nm:'Transport',ds:'Log trips'},
+      {pg:'waste',ic:'🗑',bg:'#CCFBF1',nm:'Waste',ds:'Weekly log'},
+      {pg:'compost',ic:'🌱',bg:'#CCFBF1',nm:'Compost',ds:'3 phases'},
+      {pg:'recipe',ic:'📖',bg:'#FFEDD5',nm:'Recipes',ds:myRec.length+' saved'},
+    ],
+    staff:[
+      {pg:'transport',ic:'🚚',bg:'#CCFBF1',nm:'Transport',ds:'Log trips'},
+      {pg:'waste',ic:'🗑',bg:'#CCFBF1',nm:'Waste',ds:'Weekly log'},
+      {pg:'compost',ic:'🌱',bg:'#CCFBF1',nm:'Compost',ds:'3 phases'},
+      {pg:'recipe',ic:'📖',bg:'#CCFBF1',nm:'Recipes',ds:myRec.length+' saved'},
+    ],
+    peter:[
+      {pg:'develop',ic:'🔬',bg:'#D1FAE5',nm:'R&D',ds:'New recipe'},
+      {pg:'rd-view',ic:'📖',bg:'#D1FAE5',nm:'My R&D',ds:myRec.length+' recipes'},
+      {pg:'ing-db',ic:'🌿',bg:'#F0FDF4',nm:'Ingredients',ds:DB.length+' items'},
+    ],
+    pastry:[
+      {pg:'develop',ic:'🍰',bg:'#FCE7F3',nm:'Develop',ds:'New recipe'},
+      {pg:'rd-view',ic:'📖',bg:'#EDE9FE',nm:'My R&D',ds:myRec.length+' recipes'},
+      {pg:'ing-db',ic:'🌿',bg:'#F0FDF4',nm:'Ingredients',ds:DB.length+' items'},
+    ],
+    mixo:[
+      {pg:'develop',ic:'🍹',bg:'#CFFAFE',nm:'Develop',ds:'New recipe'},
+      {pg:'rd-view',ic:'📖',bg:'#EDE9FE',nm:'My R&D',ds:myRec.length+' recipes'},
+      {pg:'ing-db',ic:'🌿',bg:'#F0FDF4',nm:'Ingredients',ds:DB.length+' items'},
+    ],
+    joy:[
+      {pg:'energy',ic:'⚡',bg:'#DBEAFE',nm:'Energy',ds:'Monthly bill'},
+      {pg:'carbon',ic:'🌍',bg:'#FEE2E2',nm:'Carbon',ds:'Scope 1+2+3'},
+      {pg:'csr',ic:'🤝',bg:'#FEF3C7',nm:'CSR',ds:'Activities'},
+    ],
+  };
+
+  const avatarEmoji = {fluke:'👨‍🍳',yok:'🧑‍🍳',staff:'🧑‍🍳',peter:'🔬',pastry:'🍰',mixo:'🍹',joy:'👔'}[S.role]||'👤';
+
+  el.innerHTML=`
+    <div class="home-greeting">
+      <div class="greeting-text">
+        <div class="hi">Good day</div>
+        <h1>${ro.name}</h1>
+        <span class="role-badge">${ro.title}</span>
+      </div>
+      <div class="avatar">${avatarEmoji}</div>
+    </div>
+
+    <div class="ov-row">
+      <span class="ov-title">Overview</span>
+      <div class="ov-grid-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+    <div class="filter-tabs" id="ftabs-${S.role}">
+      <button class="ftab${(!S.ovPeriod||S.ovPeriod==='all')?' active':''}">All</button>
+      <button class="ftab${S.ovPeriod==='day'?' active':''}">Day</button>
+      <button class="ftab${S.ovPeriod==='week'?' active':''}">Week</button>
+      <button class="ftab${S.ovPeriod==='month'?' active':''}">Month</button>
+    </div>
+
+    <div class="kpi-grid">${renderKPIs(S.role,fSourcing,fTransport,fWaste,fRecipes,scope3,wt)}</div>
+
+    <div class="stl">Quick Access</div>
+    <div class="quick-grid">
+      ${(menus[S.role]||[]).slice(0,4).map(m=>`
+        <button class="qa-btn" onclick="navigate('${m.pg}')">
+          <span class="qi">${m.ic}</span>
+          <span class="ql">${m.nm}</span>
+        </button>`).join('')}
+    </div>
+
+    ${(menus[S.role]||[]).length > 4 ? `
+    <div class="stl">More</div>
+    <div class="mcard">
+      ${(menus[S.role]||[]).slice(4).map(m=>`
+        <button class="mi" onclick="navigate('${m.pg}')">
+          <div class="iw" style="background:${m.bg}">${m.ic}</div>
+          <div class="inf"><div class="mn">${m.nm}</div><div class="md">${m.ds}</div></div>
+          <span class="chv">›</span>
+        </button>`).join('')}
+    </div>` : ''}
+  `;
+
+  // Filter tab behavior with real data update
+  el.querySelectorAll('.ftab').forEach(t=>t.onclick=function(){
+    el.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    const map={'All':'all','Day':'day','Week':'week','Month':'month'};
+    S.ovPeriod=map[this.textContent]||'all';
+    renderHome(el);
+    // Restore active tab
+    el.querySelectorAll('.ftab').forEach(x=>{
+      if(map[x.textContent]===S.ovPeriod) x.classList.add('active');
+    });
+  });
+};
+
+// ── OVERRIDE renderOwnerHome ─────────────────────────────────────────────
+renderOwnerHome = function(el){
+  const s3=LOGS.transport.reduce((s,r)=>s+(r.co2e||0),0);
+  const wt=LOGS.waste.reduce((s,r)=>s+(+r.weight||0),0);
+  el.innerHTML=`
+    <div class="home-greeting">
+      <div class="greeting-text">
+        <div class="hi">Welcome back</div>
+        <h1>Chef Tan</h1>
+        <span class="role-badge" style="background:var(--black);color:var(--white)">Owner</span>
+      </div>
+      <div class="avatar">🏠</div>
+    </div>
+    <div class="ov-row"><span class="ov-title">Overview</span></div>
+    <div class="filter-tabs" id="ftabs-${S.role}">
+      <button class="ftab${(!S.ovPeriod||S.ovPeriod==='all')?' active':''}">All</button>
+      <button class="ftab${S.ovPeriod==='day'?' active':''}">Day</button>
+      <button class="ftab${S.ovPeriod==='week'?' active':''}">Week</button>
+      <button class="ftab${S.ovPeriod==='month'?' active':''}">Month</button>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card kpi1"><div class="kl">Sourcing</div><div><div class="kv">${LOGS.sourcing.length}</div><div class="ku">items</div></div></div>
+      <div class="kpi-card kpi2"><div class="kl">Waste total</div><div><div class="kv">${wt.toFixed(0)}</div><div class="ku">kg</div></div></div>
+      <div class="kpi-card kpi3"><div class="kl dark">CO₂e Scope 3</div><div><div class="kv" style="color:var(--offblack)">${(s3/1000).toFixed(3)}</div><div class="ku" style="color:var(--muted)">t</div></div></div>
+      <div class="kpi-card kpi4"><div class="kl">R&D Recipes</div><div><div class="kv">${RECIPES.length}</div><div class="ku">total</div></div></div>
+    </div>
+    <div class="stl">Reports</div>
+    <div class="mcard">
+      <button class="mi" onclick="navigate('rep-summary')"><div class="iw" style="background:#F5F5F4">📊</div><div class="inf"><div class="mn">Full Summary</div><div class="md">All KPIs in one view</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rep-carbon')"><div class="iw" style="background:#FEE2E2">🌍</div><div class="inf"><div class="mn">Carbon Report</div><div class="md">Scope 1+2+3</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rep-all')"><div class="iw" style="background:#EDE9FE">📋</div><div class="inf"><div class="mn">All Records</div><div class="md">Every log from all roles</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('rd-view')"><div class="iw" style="background:#FCE7F3">🔬</div><div class="inf"><div class="mn">R&D Library</div><div class="md">All recipes</div></div><span class="chv">›</span></button>
+      <button class="mi" onclick="navigate('ing-db')"><div class="iw" style="background:#F0FDF4">🌿</div><div class="inf"><div class="mn">Ingredient DB</div><div class="md">${DB.length} ingredients</div></div><span class="chv">›</span></button>
+    </div>`;
+  el.querySelectorAll('.ftab').forEach(t=>t.onclick=function(){
+    el.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+};
+
+// ── END ───────────────────────────────────────────────────────────────────
+</script>
+</body>
+</html>
